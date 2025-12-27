@@ -36,3 +36,9 @@ Layout/LineLength:
     - git
     - ftp
   IgnoreCopDirectives: true
+
+RSpec/ExampleLength:
+  CountAsOne:
+    - array
+    - hash
+    - heredoc
