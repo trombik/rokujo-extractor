@@ -6,6 +6,7 @@ PATH
       marcel
       pdf-reader
       pragmatic_segmenter
+      thor
 
 GEM
   remote: https://rubygems.org/
@@ -96,6 +97,7 @@ GEM
     ruby-rc4 (0.1.5)
     rubyzip (3.2.2)
     stringio (3.1.9)
+    thor (1.4.0)
     tsort (0.2.0)
     ttfunk (1.8.0)
       bigdecimal (~> 3.1)

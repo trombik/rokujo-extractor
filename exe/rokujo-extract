@@ -1,0 +1,66 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "rokujo/extractor"
+require "thor"
+require "json"
+
+module Rokujo
+  module Extractor
+    # A simple CLI for Rokujo::Extractor
+    class CLI < Thor
+      def self.exit_on_failure? = true
+
+      map %w[--version -v] => :version, %w[--help -h] => :show_help
+      desc "--version, -v", "Print the version"
+      def version
+        puts(Rokujo::Extractor::VERSION)
+      end
+
+      desc "--help, -h", "Print help"
+      def show_help
+        help
+      end
+
+      desc "extract FILE [FILE ...]", "Extract sentences from file(s) (.pdf, .docx, .txt)"
+      method_option :format, aliases: "-f", default: "text", desc: "Output format: text or json"
+      default_task :extract
+
+      def extract(*file_paths)
+        if file_paths.empty?
+          help
+          exit
+        end
+        file_paths.each do |path|
+          results = extract_sentences(path)
+          extract_show results
+        end
+      end
+
+      no_commands do
+        def extract_sentences(path)
+          extractor = Rokujo::Extractor.create(path, { source: File.basename(path) })
+          extractor.extract_sentences
+        rescue StandardError => e
+          warn "Error processing #{path}: #{e.class} - #{e.message}"
+        end
+
+        def extract_show(results)
+          case options[:format]
+          when "json"
+            puts JSON.pretty_generate(results)
+          when "text"
+            results.each do |result|
+              puts result[:content]
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
+unless Rokujo::Extractor::CLI.all_tasks.key?(ARGV[0]) || Rokujo::Extractor::CLI.instance_variable_get(:@map).key?(ARGV[0])
+  ARGV.unshift(Rokujo::Extractor::CLI.default_task)
+end
+Rokujo::Extractor::CLI.start(ARGV)
