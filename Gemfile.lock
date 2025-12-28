@@ -3,6 +3,7 @@ PATH
   specs:
     rokujo-extractor (0.1.0)
       docx
+      fiddle
       marcel
       pdf-reader
       pragmatic_segmenter
@@ -31,6 +32,7 @@ GEM
       multipart-post (~> 2.0)
     faraday-net_http (3.4.2)
       net-http (~> 0.5)
+    fiddle (1.1.8)
     hashery (2.1.2)
     io-console (0.8.1)
     irb (1.15.3)

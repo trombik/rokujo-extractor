@@ -39,18 +39,16 @@ Gem::Specification.new do |spec|
   # Uncomment to register a new dependency of your gem
   # spec.add_dependency "example-gem", "~> 1.0"
   spec.add_dependency "docx"
+
+  # Workaround a missing dependency in pycall. fiddle used to be loaded from
+  # the standard library, but is not part of the default gems since Ruby
+  # 4.0.0.
+  spec.add_dependency "fiddle"
   spec.add_dependency "marcel"
   spec.add_dependency "pdf-reader"
   spec.add_dependency "pragmatic_segmenter"
   spec.add_dependency "ruby-spacy"
   spec.add_dependency "thor"
-
-  # Workaround a missing dependency in pycall. fiddle used to be loaded from
-  # the standard library, but is not part of the default gems since Ruby
-  # 4.0.0.
-  if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("4.0.0")
-    spec.add_dependency "fiddle"
-  end
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
