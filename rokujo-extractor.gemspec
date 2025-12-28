@@ -45,8 +45,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency "ruby-spacy"
   spec.add_dependency "thor"
 
-  # Workaround a missing dependency in ruby-spacy. fiddle used to be loaded
-  # from the standard library, but is not part of the default gems since Ruby
+  # Workaround a missing dependency in pycall. fiddle used to be loaded from
+  # the standard library, but is not part of the default gems since Ruby
   # 4.0.0.
   if Gem::Version.new(RUBY_VERSION) >= Gem::VERSION.new("4.0.0")
     spec.add_dependency "fiddle"
