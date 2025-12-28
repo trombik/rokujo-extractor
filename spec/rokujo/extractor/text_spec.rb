@@ -7,7 +7,12 @@ RSpec.describe Rokujo::Extractor::Text do
       常用漢字表にある漢字を主に使用する。
     TEXT
   end
-  let(:obj) { described_class.new("/foo.txt") }
+  let(:obj) { described_class.new("/foo.txt", model: @model) }
+  let(:model) { Spacy::Language.new(Rokujo::Extractor::Base::DEFAULT_SPACY_MODEL_NAME) }
+
+  before(:all) do
+    @model = Spacy::Language.new(Rokujo::Extractor::Base::DEFAULT_SPACY_MODEL_NAME)
+  end
 
   before do
     allow(File).to receive(:read).and_return text

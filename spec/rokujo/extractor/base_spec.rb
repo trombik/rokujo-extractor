@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Rokujo::Extractor::Base do
-  let(:extractor) { described_class.new("/foo") }
+  let(:extractor) { described_class.new("/foo", model: @model) }
   let(:text) do
     <<~TEXT
       本文を、敬体（ですます調）あるいは常体（である調）のどちらかに統一する。
@@ -9,9 +9,13 @@ RSpec.describe Rokujo::Extractor::Base do
     TEXT
   end
 
+  before(:all) do
+    @model = Spacy::Language.new(Rokujo::Extractor::Base::DEFAULT_SPACY_MODEL_NAME)
+  end
+
   describe "#new" do
     it "does not raise" do
-      expect { described_class.new("/foo.txt", {}) }.not_to raise_error
+      expect { extractor }.not_to raise_error
     end
   end
 

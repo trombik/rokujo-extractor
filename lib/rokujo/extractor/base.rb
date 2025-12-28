@@ -13,12 +13,13 @@ module Rokujo
       MIN_CHAR_LEN_SELECT = 10
       DEFAULT_SPACY_MODEL_NAME = "ja_ginza"
 
-      def initialize(file_path, metadata = {})
+      def initialize(file_path, **opts)
         @file_path = file_path
-        @metadata = metadata
-        # TODO: an option to choose from different models
-        # TODO: add a method for the caller to set a model
-        @nlp = Spacy::Language.new(DEFAULT_SPACY_MODEL_NAME)
+        @metadata = opts.fetch(:metadata, {})
+        @nlp = opts.fetch(:model) do |key|
+          warn "#{key} is not passed. Using #{DEFAULT_SPACY_MODEL_NAME}"
+          Spacy::Language.new(DEFAULT_SPACY_MODEL_NAME)
+        end
       end
 
       def extract_sentences

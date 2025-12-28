@@ -19,33 +19,33 @@ module Rokujo
   #
   module Extractor
     # Factory method to return appropriate extractor instance
-    def self.create(file_path, metadata = {})
-      extractor = extractor_by_extention(file_path, metadata) || extractor_by_mime(file_path, metadata)
+    def self.create(file_path, **opts)
+      extractor = extractor_by_extention(file_path, **opts) || extractor_by_mime(file_path, **opts)
       raise UnsupportedFileTypeError, "Unsupported file type: #{file_path}" unless extractor
 
       extractor
     end
 
-    def self.extractor_by_extention(file_path, metadata)
+    def self.extractor_by_extention(file_path, **opts)
       case File.extname(file_path).downcase
       when ".pdf"
-        PDF.new(file_path, metadata)
+        PDF.new(file_path, **opts)
       when ".docx"
-        Docx.new(file_path, metadata)
+        Docx.new(file_path, **opts)
       when ".txt"
-        Text.new(file_path, metadata)
+        Text.new(file_path, **opts)
       end
     end
 
-    def self.extractor_by_mime(file_path, metadata = {})
+    def self.extractor_by_mime(file_path, **opts)
       # see /usr/local/etc/mime.types for available MIME types
       case Marcel::MimeType.for Pathname.new(file_path), name: Pathname.new(file_path).basename.to_s
       when "application/pdf"
-        PDF.new(file_path, metadata)
+        PDF.new(file_path, **opts)
       when "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        Docx.new(file_path, metadata)
+        Docx.new(file_path, **opts)
       when "text/plain"
-        Text.new(file_path, metadata)
+        Text.new(file_path, **opts)
       end
     end
 
