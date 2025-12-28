@@ -29,26 +29,25 @@ module Rokujo
       default_task :extract
 
       def extract(*file_paths)
-        if file_paths.empty?
-          help
-          exit
-        end
+        show_help_and_exit if file_paths.empty?
         file_paths.each do |path|
           results = extract_sentences(path)
           extract_show results
         end
-        if errors&.any?
-          errors.each { |e| warn e }
-          exit 1
-        end
+        return unless errors&.any?
+
+        errors.each { |e| warn e }
+        exit 1
       end
 
+      # rubocop:disable Metrics/BlockLength
+      # The block is for non-command methods
       no_commands do
         def extract_sentences(path)
           extractor = Rokujo::Extractor.create(path, { source: File.basename(path) })
           extractor.extract_sentences
         rescue StandardError => e
-          add_error "Error processing #{path}: #{e.class} - #{e.message}"
+          add_error "Error processing #{path}: #{e.class}\n#{e.message}\n#{e.backtrace.join("\n")}"
           nil
         end
 
@@ -65,11 +64,17 @@ module Rokujo
           end
         end
 
+        def show_help_and_exit
+          help
+          exit
+        end
+
         def add_error(error)
           @errors ||= []
           @errors << error
         end
       end
+      # rubocop:enable Metrics/BlockLength
     end
   end
 end
