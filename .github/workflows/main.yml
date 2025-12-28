@@ -14,6 +14,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        python:
+          - "3.x"
+        python_architecture:
+          - x64
+
+        spacy:
+          - "3.8.11"
         ruby:
           - "3.2"
           - "3.3"
@@ -24,11 +31,25 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+          architecture: ${{ matrix.python_architecture }}
+
+      - name: Install spacy
+        run: pip install --user "spacy==${{ matrix.spacy }}"
+
+      - name: Install ja_core_news_sm
+        run: python -m spacy download ja_core_news_sm
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
           bundler: latest
+
       - name: Run the default task
         run: bundle exec rake
