@@ -9,6 +9,8 @@ module Rokujo
   module Extractor
     # A simple CLI for Rokujo::Extractor
     class CLI < Thor
+      attr_reader :errors
+
       def self.exit_on_failure? = true
 
       map %w[--version -v] => :version, %w[--help -h] => :show_help
@@ -35,6 +37,8 @@ module Rokujo
           results = extract_sentences(path)
           extract_show results
         end
+        errors.each { |e| warn e }
+        exit 1 if errors.any?
       end
 
       no_commands do
@@ -42,10 +46,13 @@ module Rokujo
           extractor = Rokujo::Extractor.create(path, { source: File.basename(path) })
           extractor.extract_sentences
         rescue StandardError => e
-          warn "Error processing #{path}: #{e.class} - #{e.message}"
+          add_error "Error processing #{path}: #{e.class} - #{e.message}"
+          nil
         end
 
         def extract_show(results)
+          return unless results
+
           case options[:format]
           when "json"
             puts JSON.pretty_generate(results)
@@ -54,6 +61,11 @@ module Rokujo
               puts result[:content]
             end
           end
+        end
+
+        def add_error(error)
+          @errors ||= []
+          @errors << error
         end
       end
     end
