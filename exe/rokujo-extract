@@ -37,8 +37,10 @@ module Rokujo
           results = extract_sentences(path)
           extract_show results
         end
-        errors.each { |e| warn e }
-        exit 1 if errors.any?
+        if errors&.any?
+          errors.each { |e| warn e }
+          exit 1
+        end
       end
 
       no_commands do
