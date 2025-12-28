@@ -18,9 +18,12 @@ jobs:
           - "3.13"
         python_architecture:
           - x64
-
         spacy:
           - "3.8.11"
+        ginza:
+          - "5.2.0"
+        ja_ginza:
+          - "5.2.0"
         ruby:
           - "3.2"
           - "3.3"
@@ -41,8 +44,8 @@ jobs:
           python-version: ${{ matrix.python }}
           architecture: ${{ matrix.python_architecture }}
 
-      - name: Install spacy
-        run: pip install --user "spacy==${{ matrix.spacy }}"
+      - name: Install spacy and ginza
+        run: pip install --user "spacy==${{ matrix.spacy }}" "ginza==${{ matrix.ginza }}" "ja_ginza==${{ matrix.ja_ginza }}"
 
       - name: Install ja_core_news_sm
         run: python -m spacy download ja_core_news_sm
