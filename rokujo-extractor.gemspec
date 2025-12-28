@@ -8,13 +8,17 @@ Gem::Specification.new do |spec|
   spec.authors = ["Tomoyuki Sakurai"]
   spec.email = ["y@trombik.org"]
 
-  spec.summary = "TODO: Write a short summary, because RubyGems requires one."
-  spec.description = "TODO: Write a longer description or delete this line."
+  spec.summary = "Sentence extractor with line-merging logic"
+  spec.description = <<~TEXT
+    Extracts clean Japanese sentences from various document formats. Includes
+    logic to join fragmented lines and determine file types via MIME when
+    extensions are missing.
+  TEXT
   spec.homepage = "https://github.com/trombik/rokujo-extractor"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0.0"
 
-  spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
+  spec.metadata["allowed_push_host"] = []
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/trombik/rokujo-extractor"
   spec.metadata["rubygems_mfa_required"] = "true"
