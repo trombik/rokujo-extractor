@@ -42,3 +42,8 @@ RSpec/ExampleLength:
     - array
     - hash
     - heredoc
+Metrics/MethodLength:
+  CountAsOne:
+    - array
+    - hash
+    - heredoc
