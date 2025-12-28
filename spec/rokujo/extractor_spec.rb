@@ -23,5 +23,21 @@ RSpec.describe Rokujo::Extractor do
         expect(described_class.create("/foo.docx")).to be_a Rokujo::Extractor::Docx
       end
     end
+
+    context "when unsupported file is given" do
+      it "raise UnsupportedFileTypeError" do
+        allow(Marcel::MimeType).to receive(:for).and_return "image/svg+xml"
+
+        expect { described_class.create("/foo.svg") }.to raise_error Rokujo::Extractor::UnsupportedFileTypeError
+      end
+    end
+
+    context "when supported file is given" do
+      it "raise UnsupportedFileTypeError" do
+        allow(Marcel::MimeType).to receive(:for).and_return "text/plain"
+
+        expect { described_class.create("/foo") }.not_to raise_error
+      end
+    end
   end
 end

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "marcel"
+
 require_relative "extractor/version"
 require_relative "extractor/base"
 require_relative "extractor/text"
@@ -16,19 +18,40 @@ module Rokujo
   # * `txt`
   #
   module Extractor
-    class Error < StandardError; end
-
     # Factory method to return appropriate extractor instance
     def self.create(file_path, metadata = {})
-      extension = File.extname(file_path).downcase
-      case extension
+      extractor = extractor_by_extention(file_path, metadata) || extractor_by_mime(file_path, metadata)
+      raise UnsupportedFileTypeError, "Unsupported file type: #{file_path}" unless extractor
+
+      extractor
+    end
+
+    def self.extractor_by_extention(file_path, metadata)
+      case File.extname(file_path).downcase
       when ".pdf"
         PDF.new(file_path, metadata)
       when ".docx"
         Docx.new(file_path, metadata)
-      else
+      when ".txt"
         Text.new(file_path, metadata)
       end
     end
+
+    def self.extractor_by_mime(file_path, metadata = {})
+      # see /usr/local/etc/mime.types for available MIME types
+      case Marcel::MimeType.for Pathname.new(file_path), name: Pathname.new(file_path).basename.to_s
+      when "application/pdf"
+        PDF.new(file_path, metadata)
+      when "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        Docx.new(file_path, metadata)
+      when "text/plain"
+        Text.new(file_path, metadata)
+      end
+    end
+
+    private_class_method :extractor_by_mime, :extractor_by_extention
+
+    class Error < StandardError; end
+    class UnsupportedFileTypeError < Error; end
   end
 end

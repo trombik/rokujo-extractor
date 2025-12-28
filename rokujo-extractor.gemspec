@@ -35,6 +35,7 @@ Gem::Specification.new do |spec|
   # Uncomment to register a new dependency of your gem
   # spec.add_dependency "example-gem", "~> 1.0"
   spec.add_dependency "docx"
+  spec.add_dependency "marcel"
   spec.add_dependency "pdf-reader"
   spec.add_dependency "pragmatic_segmenter"
 
