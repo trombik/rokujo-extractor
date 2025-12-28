@@ -8,6 +8,9 @@ module Rokujo
     class Base
       attr_reader :file_path, :metadata
 
+      MIN_CHAR_LEN_BREAK = 10
+      MIN_CHAR_LEN_SELECT = 10
+
       def initialize(file_path, metadata = {})
         @file_path = file_path
         @metadata = metadata
@@ -17,8 +20,10 @@ module Rokujo
         content = raw_text
         return [] if content.nil? || content.empty?
 
-        normalized_text = reconstruct_lines(content)
-        segment_text(normalized_text).map.with_index do |s, i|
+        reconstructed_text = reconstruct_lines(content)
+        segmented_texts = segment_text reconstructed_text
+        filtered_segments = filter_segments segmented_texts
+        filtered_segments.map.with_index do |s, i|
           {
             content: s.strip,
             line_number: i + 1,
@@ -38,6 +43,14 @@ module Rokujo
       end
 
       private
+
+      def filter_segments(segments)
+        segments.select do |segment|
+          # ends with Japanese?
+          segment.strip.match?(/[\p{hiragana}\p{katakana}\p{han}][\p{P}\p{Pe}]?\z/) &&
+            segment.length >= MIN_CHAR_LEN_SELECT
+        end
+      end
 
       # Reconstructs a sentence from multiple lines.
       #
@@ -70,7 +83,7 @@ module Rokujo
         return true if next_line.match?(/^([0-9０-９]|[（(]?[0-9]|[第・■●○])/)
 
         # 現在の行が極端に短い（見出しの可能性）
-        return true if current.length < 10
+        return true if current.length < MIN_CHAR_LEN_BREAK
 
         false
       end
