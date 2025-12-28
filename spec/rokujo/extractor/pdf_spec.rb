@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Rokujo::Extractor::PDF do
-  let(:extractor) { described_class.new("/foo.pdf", model: @model) }
+  let(:extractor) { described_class.new("/foo.pdf", model: model) }
   let(:reader) { instance_double(PDF::Reader) }
   let(:pages) { [instance_double(PDF::Reader::Page, text: text)] }
   let(:text) do
@@ -9,10 +9,6 @@ RSpec.describe Rokujo::Extractor::PDF do
       本文を、敬体（ですます調）あるいは常体（である調）のどちらかに統一する。
       常用漢字表にある漢字を主に使用する。
     TEXT
-  end
-
-  before(:all) do
-    @model = Spacy::Language.new(Rokujo::Extractor::Base::DEFAULT_SPACY_MODEL_NAME)
   end
 
   before do
