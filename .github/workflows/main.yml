@@ -9,8 +9,8 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    name: Ruby ${{ matrix.ruby }}
+    runs-on: ${{ matrix.runs_on }}
+    name: Ruby ${{ matrix.ruby }} on ${{ matrix.runs_on }}
     strategy:
       fail-fast: false
       matrix:
@@ -26,6 +26,9 @@ jobs:
           - "3.3"
           - "3.4"
           - "head"
+        runs_on:
+          - ubuntu-latest
+          - windows-latest
 
     steps:
       - uses: actions/checkout@v4
