@@ -4,7 +4,7 @@ plugins:
 
 AllCops:
   NewCops: enable
-  TargetRubyVersion: 3.2
+  TargetRubyVersion: 3.0
   # enable detailed explanations available in cops
   # the default output is not enough to understand what is wrong
   DisplayCopNames: true
