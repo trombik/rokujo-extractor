@@ -78,8 +78,8 @@ RSpec.describe Rokujo::Extractor::Base do
     end
 
     it "removes a sentence that starts with ● and withput VERB" do
-      # some characters, such as `●` are labled as VERB
-      pending "Not implemented yet"
+      # some characters, such as `●` are labled as VERB depending on model
+      # (ja_core_news_sm).
       input = "●  名詞、名詞、名詞、名詞、名詞"
       allow(extractor).to receive(:raw_text).and_return(input)
       extracted_sentences = extractor.extract_sentences.map { |s| s[:content] }
