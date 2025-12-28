@@ -53,15 +53,28 @@ module Rokujo
           # ends with Japanese?
           segment.strip.match?(/[\p{hiragana}\p{katakana}\p{han}][\p{P}\p{Pe}]?\z/) &&
             segment.length >= MIN_CHAR_LEN_SELECT &&
-            include_verb?(segment)
+            # reject if the segment does not include VERB or predicate, likely
+            # a title or an item name
+            segment_include_verb?(segment)
         end
       end
 
-      def include_verb?(text)
+      def segment_include_verb?(text)
         doc = @nlp.read(text)
-        tokens_without_punct = doc.tokens.reject { |token| token.pos.match?(/PUNCT|SYM/) }
         # does the sentence have a verb?
-        return true if tokens_without_punct.any? { |token| token.pos == "VERB" }
+        return true if doc.tokens.any? { |token| token.pos == "VERB" }
+
+        # does the sentence have predicate (述語)?
+        return true if tokens_include_predicate?(doc.tokens)
+
+        false
+      end
+
+      # True if tokens include predicate. Predicate is not labled as VERB but
+      # as NOUN (日本人) + AUX (です) + PUNCT (。)
+      def tokens_include_predicate?(tokens)
+        # We need to know the last token but not PUNCT, such as `。`.
+        tokens_without_punct = tokens.reject { |token| token.pos.match?(/PUNCT|SYM/) }
 
         # does the sentence have 述語? such as "述語です"?
         last_token = tokens_without_punct.last
