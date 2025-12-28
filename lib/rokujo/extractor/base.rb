@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "pragmatic_segmenter"
+require "ruby-spacy"
 
 module Rokujo
   module Extractor
@@ -14,6 +15,9 @@ module Rokujo
       def initialize(file_path, metadata = {})
         @file_path = file_path
         @metadata = metadata
+        # TODO: an option to choose from different models
+        # TODO: add a method for the caller to set a model
+        @nlp = Spacy::Language.new("ja_core_news_sm")
       end
 
       def extract_sentences
@@ -48,8 +52,23 @@ module Rokujo
         segments.select do |segment|
           # ends with Japanese?
           segment.strip.match?(/[\p{hiragana}\p{katakana}\p{han}][\p{P}\p{Pe}]?\z/) &&
-            segment.length >= MIN_CHAR_LEN_SELECT
+            segment.length >= MIN_CHAR_LEN_SELECT &&
+            include_verb?(segment)
         end
+      end
+
+      def include_verb?(text)
+        doc = @nlp.read(text)
+        tokens_without_punct = doc.tokens.reject { |token| token.pos.match?(/PUNCT|SYM/) }
+        # does the sentence have a verb?
+        return true if tokens_without_punct.any? { |token| token.pos == "VERB" }
+
+        # does the sentence have 述語? such as "述語です"?
+        last_token = tokens_without_punct.last
+        prev_token = tokens_without_punct[-2]
+        return true if last_token.pos == "AUX" && prev_token&.pos&.match?(/NOUN|PROPN|PRON/)
+
+        false
       end
 
       # Reconstructs a sentence from multiple lines.

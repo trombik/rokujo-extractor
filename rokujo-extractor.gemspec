@@ -42,6 +42,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "marcel"
   spec.add_dependency "pdf-reader"
   spec.add_dependency "pragmatic_segmenter"
+  spec.add_dependency "ruby-spacy"
   spec.add_dependency "thor"
 
   # For more information and examples about making a new gem, check out our

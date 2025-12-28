@@ -4,8 +4,8 @@ RSpec.describe Rokujo::Extractor::Base do
   let(:extractor) { described_class.new("/foo") }
   let(:text) do
     <<~TEXT
-        1行目の文章です。
-      こんにちは、世界!
+      本文を、敬体（ですます調）あるいは常体（である調）のどちらかに統一する。
+      常用漢字表にある漢字を主に使用する。
     TEXT
   end
 
@@ -37,12 +37,12 @@ RSpec.describe Rokujo::Extractor::Base do
     end
 
     specify ":content has text" do
-      expect(extractor.extract_sentences.first[:content]).to eq "1行目の文章です。"
+      expect(extractor.extract_sentences.first[:content]).to eq text.split("\n").first
     end
 
     it "combines multiple lines into a single line" do
       input = <<~TEXT
-        テストの
+        これはテストの
         1行目の
         続きです。
         これは2行目で、1行に収まっています。
@@ -50,7 +50,7 @@ RSpec.describe Rokujo::Extractor::Base do
       allow(extractor).to receive(:raw_text).and_return(input)
       extracted_sentences = extractor.extract_sentences.map { |s| s[:content] }
 
-      expect(extracted_sentences).to include("テストの1行目の続きです。", "これは2行目で、1行に収まっています。")
+      expect(extracted_sentences).to include("これはテストの1行目の続きです。", "これは2行目で、1行に収まっています。")
     end
 
     it "removes lines that does not end with a Japanese character" do
@@ -67,6 +67,34 @@ RSpec.describe Rokujo::Extractor::Base do
       extracted_sentences = extractor.extract_sentences.map { |s| s[:content] }
 
       expect(extracted_sentences).to include input
+    end
+
+    it "removes a sentence without VERB" do
+      input = "例：カーナビゲーションシステム"
+      allow(extractor).to receive(:raw_text).and_return(input)
+      extracted_sentences = extractor.extract_sentences.map { |s| s[:content] }
+
+      expect(extracted_sentences).not_to include input
+    end
+
+    it "removes a sentence that starts with ● and withput VERB" do
+      # some characters, such as `●` are labled as VERB
+      pending "Not implemented yet"
+      input = "●  名詞、名詞、名詞、名詞、名詞"
+      allow(extractor).to receive(:raw_text).and_return(input)
+      extracted_sentences = extractor.extract_sentences.map { |s| s[:content] }
+
+      expect(extracted_sentences).not_to include input
+    end
+
+    it "does not remove a sentence that starts with ● and with VERB" do
+      # some characters, such as `●` are labled as VERB
+      pending "Not implemented yet"
+      input = "●  動詞が踏まれていれば削除しないが、記号は取り除かれる"
+      allow(extractor).to receive(:raw_text).and_return(input)
+      extracted_sentences = extractor.extract_sentences.map { |s| s[:content] }
+
+      expect(extracted_sentences).to include input.tr("●", "")
     end
   end
 end

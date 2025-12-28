@@ -3,8 +3,8 @@
 RSpec.describe Rokujo::Extractor::Text do
   let(:text) do
     <<~TEXT
-      Hello, world!
-      A sample text
+      本文を、敬体（ですます調）あるいは常体（である調）のどちらかに統一する。
+      常用漢字表にある漢字を主に使用する。
     TEXT
   end
   let(:obj) { described_class.new("/foo.txt") }
@@ -21,7 +21,8 @@ RSpec.describe Rokujo::Extractor::Text do
 
   describe "#extract_sentences" do
     it "extracts text in the file" do
-      expect(obj.extract_sentences.first).to include(content: "Hello, world!")
+      extracted_sentences = obj.extract_sentences.map { |element| element[:content] }
+      expect(extracted_sentences).to eq text.split("\n")
     end
 
     it "extracts correct number of sentences" do
