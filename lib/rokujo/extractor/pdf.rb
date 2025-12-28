@@ -2,6 +2,7 @@
 
 require "shellwords"
 require "pdf-reader"
+require "tty-spinner"
 
 module Rokujo
   module Extractor
@@ -16,7 +17,11 @@ module Rokujo
       end
 
       def raw_text
-        reader.pages.map(&:text).join("\n")
+        spinner = TTY::Spinner.new("[:spinner] Parsing PDF...", format: :dots)
+        spinner.auto_spin
+        result = reader.pages.map(&:text).join("\n")
+        spinner.stop("Done")
+        result
       end
     end
   end

@@ -29,9 +29,17 @@ module Rokujo
       method_option :format, aliases: "-f", default: "text", desc: "Output format: text or json"
       default_task :extract
 
+      # rubocop:disable Metrics/MethodLength
+      # TODO: create a wrapper to perform slow operation and display a spinner
       def extract(*file_paths)
         show_help_and_exit if file_paths.empty?
+
+        spinner = TTY::Spinner.new("[:spinner] Loading #{Rokujo::Extractor::Base::DEFAULT_SPACY_MODEL_NAME} ...",
+                                   format: :dots)
+        spinner.auto_spin
         @model = Spacy::Language.new(Rokujo::Extractor::Base::DEFAULT_SPACY_MODEL_NAME)
+        spinner.stop("Done")
+
         file_paths.each do |path|
           results = extract_sentences(path)
           extract_show results
@@ -41,6 +49,7 @@ module Rokujo
         errors.each { |e| warn e }
         exit 1
       end
+      # rubocop:enable Metrics/MethodLength
 
       # rubocop:disable Metrics/BlockLength
       # The block is for non-command methods

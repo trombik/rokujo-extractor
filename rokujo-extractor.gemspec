@@ -49,6 +49,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency "pragmatic_segmenter"
   spec.add_dependency "ruby-spacy"
   spec.add_dependency "thor"
+  spec.add_dependency "tty-progressbar"
+  spec.add_dependency "tty-spinner"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

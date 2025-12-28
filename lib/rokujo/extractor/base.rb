@@ -2,6 +2,8 @@
 
 require "pragmatic_segmenter"
 require "ruby-spacy"
+require "tty-progressbar"
+require "tty-spinner"
 
 module Rokujo
   module Extractor
@@ -45,13 +47,19 @@ module Rokujo
       end
 
       def segment_text(text)
-        PragmaticSegmenter::Segmenter.new(text: text, language: "ja").segment
+        spinner = TTY::Spinner.new("[:spinner] Segmenting...", format: :dots)
+        spinner.auto_spin
+        result = PragmaticSegmenter::Segmenter.new(text: text, language: "ja").segment
+        spinner.stop("Done")
+        result
       end
 
       private
 
       def filter_segments(segments)
+        bar = TTY::ProgressBar.new("filtering [:bar]", total: segments.count)
         segments.select do |segment|
+          bar.advance
           # ends with Japanese?
           segment.strip.match?(/[\p{hiragana}\p{katakana}\p{han}][\p{P}\p{Pe}]?\z/) &&
             segment.length >= MIN_CHAR_LEN_SELECT &&
@@ -86,6 +94,12 @@ module Rokujo
         false
       end
 
+      def reconstruct_lines(text)
+        lines = text.split("\n").map(&:strip).reject(&:empty?)
+        bar = TTY::ProgressBar.new("reconstructing [:bar]", total: lines.count)
+        bar.iterate(reconstructor(lines), lines.count).to_a.join
+      end
+
       # Reconstructs a sentence from multiple lines.
       #
       # An example:
@@ -97,15 +111,16 @@ module Rokujo
       # Output:
       # テストの一行目の続きです。
       # 二行目です。
-      def reconstruct_lines(text)
-        lines = text.split("\n").map(&:strip).reject(&:empty?)
-        reconstructed = String.new
-        lines.each_with_index do |line, i|
-          reconstructed << line
-          next_line = lines[i + 1]
-          reconstructed << "\n" if should_break_after?(line, next_line)
+      def reconstructor(lines)
+        Enumerator.new do |y|
+          lines.each_with_index do |line, i|
+            reconstructed = String.new
+            reconstructed << line
+            next_line = lines[i + 1]
+            reconstructed << "\n" if should_break_after?(line, next_line)
+            y.yield reconstructed
+          end
         end
-        reconstructed
       end
 
       def should_break_after?(current, next_line)
