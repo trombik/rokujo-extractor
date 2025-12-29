@@ -47,3 +47,4 @@ Metrics/MethodLength:
     - array
     - hash
     - heredoc
+    - method_call
