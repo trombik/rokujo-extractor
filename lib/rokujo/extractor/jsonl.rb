@@ -12,14 +12,10 @@ module Rokujo
 
       def raw_text
         texts = []
-        spinner = TTY::Spinner.new("[:spinner] Parsing JSONL...", format: :dots)
-        spinner.auto_spin
         file_content.each_line do |line|
           texts << JSON.parse(line)["text"]
         end
-        result = texts.join("\n")
-        spinner.stop("Done")
-        result
+        texts.join("\n")
       end
 
       def file_content

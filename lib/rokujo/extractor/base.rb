@@ -4,11 +4,14 @@ require "pragmatic_segmenter"
 require "ruby-spacy"
 require "tty-progressbar"
 require "tty-spinner"
+require_relative "helpers"
 
 module Rokujo
   module Extractor
     # The base class of Extractors
     class Base
+      include Rokujo::Extractor::Helpers
+
       attr_reader :file_path, :metadata
 
       MIN_CHAR_LEN_BREAK = 10
@@ -25,11 +28,12 @@ module Rokujo
       end
 
       def extract_sentences
-        content = raw_text
+        content = while_spinning(message: "[:spinner] Parsing ...") { raw_text }
         return [] if content.nil? || content.empty?
 
         reconstructed_text = reconstruct_lines(content)
-        segmented_texts = segment_text reconstructed_text
+        segmented_texts = while_spinning(message: "[:spinner] Segmenting ...") { segment_text reconstructed_text }
+
         filtered_segments = filter_segments segmented_texts
         filtered_segments.map.with_index do |s, i|
           {
@@ -47,11 +51,7 @@ module Rokujo
       end
 
       def segment_text(text)
-        spinner = TTY::Spinner.new("[:spinner] Segmenting...", format: :dots)
-        spinner.auto_spin
-        result = PragmaticSegmenter::Segmenter.new(text: text, language: "ja").segment
-        spinner.stop("Done")
-        result
+        PragmaticSegmenter::Segmenter.new(text: text, language: "ja").segment
       end
 
       private

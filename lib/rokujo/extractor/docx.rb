@@ -9,12 +9,8 @@ module Rokujo
       protected
 
       def raw_text
-        spinner = TTY::Spinner.new("[:spinner] Parsing Docx...", format: :dots)
-        spinner.auto_spin
         doc = ::Docx::Document.open(@file_path)
-        result = doc.paragraphs.map(&:text).join("\n")
-        spinner.stop("Done")
-        result
+        doc.paragraphs.map(&:text).join("\n")
       rescue StandardError => e
         raise Error, "failed to read #{@file_path}: #{e.message}"
       end
