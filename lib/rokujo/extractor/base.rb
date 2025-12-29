@@ -2,8 +2,6 @@
 
 require "pragmatic_segmenter"
 require "ruby-spacy"
-require "tty-progressbar"
-require "tty-spinner"
 require_relative "helpers"
 
 module Rokujo
@@ -28,11 +26,11 @@ module Rokujo
       end
 
       def extract_sentences
-        content = while_spinning(message: "[:spinner] Parsing ...") { raw_text }
+        content = with_spinner(message: "[:spinner] Parsing ...") { raw_text }
         return [] if content.nil? || content.empty?
 
         reconstructed_text = reconstruct_lines(content)
-        segmented_texts = while_spinning(message: "[:spinner] Segmenting ...") { segment_text reconstructed_text }
+        segmented_texts = with_spinner(message: "[:spinner] Segmenting ...") { segment_text reconstructed_text }
 
         filtered_segments = filter_segments segmented_texts
         filtered_segments.map.with_index do |s, i|

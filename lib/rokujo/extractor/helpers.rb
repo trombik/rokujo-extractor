@@ -7,23 +7,6 @@ module Rokujo
   module Extractor
     # Helpers for Rokujo::Extractor
     module Helpers
-      # A Null Object for TTY::Spinner.
-      class NilSpinner
-        def initialize
-          @spinner = TTY::Spinner.new
-        end
-
-        def method_missing(name, *args, &block)
-          return if @spinner.respond_to?(name)
-
-          super
-        end
-
-        def respond_to_missing?(name, include_private = false)
-          @spinner.respond_to?(name, include_private) || super
-        end
-      end
-
       # Display a spinner while processing a block.
       #
       # @param message [String] The message of the spinner. An example: `[:spinner] Processing ...`
@@ -32,7 +15,7 @@ module Rokujo
       # @param spinner [TTY::Spinner] Optional spinner object. Useful to manage multiple spinners with [TTY::Spinner::Multi].
       # @param spinner_opts [Hash] Option to pass to `TTY::Spinner.new`.
       # @example
-      #   while_spinning(message: "[:spinner] Doing something ...") do |spinner|
+      #   with_spinner(message: "[:spinner] Doing something ...") do |spinner|
       #     do_something
       #     spinner.pause
       #     spinner.log("Do something else")
@@ -42,13 +25,12 @@ module Rokujo
       #
       # @yield [spinner] Yields the spinner instance to the block.
       #
-      def while_spinning(message: "[:spinner] Doing ...",
+      def with_spinner(message: "[:spinner] Doing ...",
                          success_message: "Done",
                          error_message: "Failed",
                          spinner: nil,
                          **spinner_opts)
         spinner ||= ::TTY::Spinner.new(message, spinner_opts)
-        spinner = NilSpinner.new if ENV.key? "CI"
         spinner.auto_spin
         result = yield(spinner)
         spinner.success(success_message)
