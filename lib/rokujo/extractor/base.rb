@@ -57,15 +57,17 @@ module Rokujo
       private
 
       def filter_segments(segments)
-        bar = TTY::ProgressBar.new("filtering [:bar]", total: segments.count)
-        segments.select do |segment|
-          bar.advance
-          # ends with Japanese?
-          segment.strip.match?(/[\p{hiragana}\p{katakana}\p{han}][\p{P}\p{Pe}]?\z/) &&
-            segment.length >= MIN_CHAR_LEN_SELECT &&
-            # reject if the segment does not include VERB or predicate, likely
-            # a title or an item name
-            segment_include_verb?(segment)
+        with_progress(message: "Filtering [:bar]", total: segments.count) do |bar|
+          segments.select do |segment|
+            # ends with Japanese?
+            result = segment.strip.match?(/[\p{hiragana}\p{katakana}\p{han}][\p{P}\p{Pe}]?\z/) &&
+                     segment.length >= MIN_CHAR_LEN_SELECT &&
+                     # reject if the segment does not include VERB or predicate, likely
+                     # a title or an item name
+                     segment_include_verb?(segment)
+            bar.advance
+            result
+          end
         end
       end
 
@@ -96,8 +98,9 @@ module Rokujo
 
       def reconstruct_lines(text)
         lines = text.split("\n").map(&:strip).reject(&:empty?)
-        bar = TTY::ProgressBar.new("reconstructing [:bar]", total: lines.count)
-        bar.iterate(reconstructor(lines), lines.count).to_a.join
+        with_progress(message: "Reconstructing [:bar]", total: lines.count) do |bar|
+          bar.iterate(reconstructor(lines), lines.count).to_a.join
+        end
       end
 
       # Reconstructs a sentence from multiple lines.

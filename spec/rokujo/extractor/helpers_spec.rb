@@ -75,4 +75,42 @@ RSpec.describe Rokujo::Extractor::Helpers do
       end
     end
   end
+  describe "#with_progress" do
+    let(:bar) { instance_double(TTY::ProgressBar) }
+
+    before do
+      allow(bar).to receive(:stop)
+      allow(bar).to receive(:finish)
+    end
+
+    it "returns what the block returns" do
+      expect(with_progress(progress_bar: bar) { "foo" }).to eq "foo"
+    end
+
+    context "when no progress_bar is given" do
+      it "creates a TTY::ProgressBar instance itself" do
+        allow(TTY::ProgressBar).to receive(:new).and_return(bar)
+        with_progress { nil }
+        expect(bar).to have_received(:finish)
+      end
+    end
+
+    context "when the given block fails" do
+      it "stops the progress bar" do
+        begin
+          with_progress(progress_bar: bar) { raise NoMethodError }
+        rescue NoMethodError
+          # ignore the exception to verify the expectation
+        end
+
+        expect(bar).to have_received(:stop)
+      end
+
+      it "re-raises the exception" do
+        expect do
+          with_progress(progress_bar: bar) { raise NoMethodError }
+        end.to raise_error NoMethodError
+      end
+    end
+  end
 end
