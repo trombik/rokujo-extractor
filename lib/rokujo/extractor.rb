@@ -9,6 +9,7 @@ require_relative "extractor/docx"
 require_relative "extractor/pdf"
 require_relative "extractor/jsonl"
 require_relative "extractor/helpers"
+require_relative "extractor/filters"
 
 module Rokujo
   # A factory to extratc texts from files.
