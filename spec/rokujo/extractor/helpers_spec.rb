@@ -46,6 +46,7 @@ RSpec.describe Rokujo::Extractor::Helpers do
       end
     end
   end
+
   describe "#with_progress" do
     let(:bar) { instance_double(TTY::ProgressBar) }
 
