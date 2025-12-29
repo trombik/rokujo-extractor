@@ -7,6 +7,9 @@ module Rokujo
   module Extractor
     # Helpers for Rokujo::Extractor
     module Helpers
+      # Globally enabled or disables TTY widgets.
+      @widget_enabled = true
+
       # Display a spinner while processing a block.
       #
       # @param message [String] The message of the spinner. An example: `[:spinner] Processing ...`
@@ -26,11 +29,12 @@ module Rokujo
       # @yield [spinner] Yields the spinner instance to the block.
       #
       def with_spinner(message: "[:spinner] Doing ...",
-                         success_message: "Done",
-                         error_message: "Failed",
-                         spinner: nil,
-                         **spinner_opts)
-        spinner ||= ::TTY::Spinner.new(message, spinner_opts)
+                       success_message: "Done",
+                       error_message: "Failed",
+                       spinner: nil,
+                       **spinner_opts)
+        opts = { output: @widget_enabled ? $stdout : File.open(File::NULL, "w") }
+        spinner ||= ::TTY::Spinner.new(message, spinner_opts.merge(opts))
         spinner.auto_spin
         result = yield(spinner)
         spinner.success(success_message)
@@ -63,13 +67,21 @@ module Rokujo
                         total: 100,
                         progress_bar: nil,
                         **bar_opts)
-        bar = progress_bar || ::TTY::ProgressBar.new(message, bar_opts.merge({ total: total }))
+        opts = {
+          output: @widget_enabled ? $stdout : File.open(File::NULL, "w"),
+          total: total
+        }
+        bar = progress_bar || ::TTY::ProgressBar.new(message, bar_opts.merge(opts))
         result = yield(bar)
         bar.finish
         result
       rescue StandardError => e
         bar&.stop
         raise e
+      end
+
+      class << self
+        attr_accessor :widget_enabled
       end
     end
   end
