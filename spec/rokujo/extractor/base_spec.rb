@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Rokujo::Extractor::Base do
-  let(:extractor) { described_class.new("/foo", model: model) }
+  let(:extractor) { described_class.new("/foo", model: model, widget_enable: false) }
   let(:text) do
     <<~TEXT
       本文を、敬体（ですます調）あるいは常体（である調）のどちらかに統一する。

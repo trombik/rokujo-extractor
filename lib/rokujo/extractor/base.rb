@@ -23,6 +23,7 @@ module Rokujo
           warn "#{key} is not passed. Using #{DEFAULT_SPACY_MODEL_NAME}"
           Spacy::Language.new(DEFAULT_SPACY_MODEL_NAME)
         end
+        @widget_enable = opts.fetch(:widget_enable, true)
       end
 
       def extract_sentences
@@ -34,7 +35,8 @@ module Rokujo
           Filters::Segmenter.new,
           Filters::VerblessRejector.new(model: @nlp),
           Filters::JapaneseSelector.new,
-          Filters::ShortSentenceRejector.new
+          Filters::ShortSentenceRejector.new,
+          widget_enable: @widget_enable
         )
 
         pipeline.run(content).map.with_index do |s, i|
