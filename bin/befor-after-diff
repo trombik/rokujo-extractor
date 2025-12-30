@@ -1,0 +1,6 @@
+#!/bin/sh
+git stash
+bundle exec exe/rokujo-extract extract tmp/test.pdf > tmp/before.txt
+git stash pop
+bundle exec exe/rokujo-extract extract tmp/test.pdf > tmp/after.txt
+diff -Nru --color=auto tmp/before.txt tmp/after.txt
