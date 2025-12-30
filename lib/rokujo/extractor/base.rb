@@ -28,16 +28,7 @@ module Rokujo
         content = with_spinner(message: "[:spinner] Parsing ...") { raw_text }
         return [] if content.nil? || content.empty?
 
-        pipeline = Pipeline.new(
-          Filters::LineReconstructor.new,
-          Filters::Segmenter.new,
-          Filters::VerblessRejector.new(model: @nlp),
-          Filters::BulletRemover.new,
-          Filters::JapaneseSelector.new,
-          Filters::ShortSentenceRejector.new,
-          widget_enable: @widget_enable
-        )
-
+        pipeline = Pipeline.new(*pipeline_filters, widget_enable: @widget_enable)
         pipeline.run(content).map.with_index do |s, i|
           {
             content: s.strip,
@@ -51,6 +42,20 @@ module Rokujo
 
       def raw_text
         raise NotImplementedError, "Subclasses must implement raw_text"
+      end
+
+      private
+
+      def pipeline_filters
+        [
+          Filters::LineReconstructor.new,
+          Filters::Segmenter.new,
+          Filters::VerblessRejector.new(model: @nlp),
+          Filters::BulletRemover.new,
+          Filters::UrlRemover.new,
+          Filters::JapaneseSelector.new,
+          Filters::ShortSentenceRejector.new
+        ]
       end
     end
   end
