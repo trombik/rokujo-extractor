@@ -89,12 +89,11 @@ RSpec.describe Rokujo::Extractor::Base do
 
     it "does not remove a sentence that starts with ● and with VERB" do
       # some characters, such as `●` are labled as VERB
-      pending "Not implemented yet"
-      input = "●  動詞が踏まれていれば削除しないが、記号は取り除かれる"
+      input = "●  動詞が含まれていれば削除しないが、記号は取り除かれる"
       allow(extractor).to receive(:raw_text).and_return(input)
       extracted_sentences = extractor.extract_sentences.map { |s| s[:content] }
 
-      expect(extracted_sentences).to include input.tr("●", "")
+      expect(extracted_sentences).to include input.tr("● ", "")
     end
   end
 end
