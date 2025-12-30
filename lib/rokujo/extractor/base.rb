@@ -12,8 +12,6 @@ module Rokujo
 
       attr_reader :file_path, :metadata
 
-      MIN_CHAR_LEN_BREAK = 10
-      MIN_CHAR_LEN_SELECT = 10
       DEFAULT_SPACY_MODEL_NAME = "ja_ginza"
 
       def initialize(file_path, **opts)
