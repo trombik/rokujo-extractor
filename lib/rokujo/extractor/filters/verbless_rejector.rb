@@ -40,7 +40,9 @@ module Rokujo
         def include_verb?(sentence)
           doc = @nlp.read(sentence)
           # does the sentence have a verb?
-          return true if doc.tokens.any? { |token| token.pos == "VERB" }
+          # XXX in some cases, token.pos is labeled with VERB but tag is not
+          # 動詞.
+          return true if doc.tokens.any? { |token| token.pos == "VERB" && token.tag.match(/動詞/) }
 
           # does the sentence have predicate (述語)?
           return true if doc_include_predicate?(doc)
