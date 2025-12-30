@@ -32,6 +32,7 @@ module Rokujo
           Filters::LineReconstructor.new,
           Filters::Segmenter.new,
           Filters::VerblessRejector.new(model: @nlp),
+          Filters::BulletRemover.new,
           Filters::JapaneseSelector.new,
           Filters::ShortSentenceRejector.new,
           widget_enable: @widget_enable
