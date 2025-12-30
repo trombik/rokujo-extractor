@@ -23,7 +23,7 @@ module Rokujo
             config.total = sentences.count
           end
           selected = sentences.select do |sentence|
-            result = include_verb?(sentence)
+            result = sentence_include_predicate?(sentence)
             bar&.advance
             result
           end
@@ -37,39 +37,32 @@ module Rokujo
 
         private
 
-        def include_verb?(sentence)
+        def sentence_include_predicate?(sentence)
           doc = @nlp.read(sentence)
-          # does the sentence have a verb?
-          # XXX in some cases, token.pos is labeled with VERB but tag is not
-          # 動詞.
-          return true if doc.tokens.any? { |token| token.pos == "VERB" && token.tag.match(/動詞/) }
-
-          # does the sentence have predicate (述語)?
-          return true if doc_include_predicate?(doc)
-
-          false
+          tokens_include_predicate?(doc.tokens)
         end
 
-        # True if tokens include predicate. Predicate is not labled as VERB but
-        # as NOUN (日本人) + AUX (です) + PUNCT (。)
-        def doc_include_predicate?(doc)
-          tokens_without_punct = doc.tokens.reject { |token| token&.pos&.match?(/PUNCT|SYM/) }
-          return true if tokens_include_predicate?(tokens_without_punct)
-
-          false
-        end
-
-        # Returns bool if the given tokens end with a predicate.
+        # Returns true or false if the given tokens has a predicate.
         #
-        # As this menthod determins if the tokens include predicate by using
-        # the last two tokens, the tokens must not include PUNCT or SYM, such
-        # as `。`.
+        # rubocop:disable Metrics/CyclomaticComplexity
+        # The logic here is complecated and it does no improve readability
+        # even if the logic is refactored into multiple methods.
         def tokens_include_predicate?(tokens)
-          # does the sentence have 述語? such as "述語です"?
-          last_token = tokens.last
-          prev_token = tokens[-2]
-          last_token&.pos == "AUX" && prev_token&.pos&.match?(/NOUN|PROPN|PRON/)
+          # if nsubj is found, there should be 述語
+          return true if tokens.any? { |t| t.dep_ == "nsubj" }
+
+          # find the ROOT token and, if found, see if Part-of-Speech (pos) either:
+          # * indicates an action or process (VERB)
+          # * indicates a state or quality (ADJ)
+          # * indicates a copula or auxiliary state (AUX, e.g., "だ" or "です")
+          root_token = tokens.find { |t| t.dep_ == "ROOT" }
+          return true if root_token && %w[VERB ADJ AUX].include?(root_token.pos)
+
+          return true if tokens.any? { |t| t.tag_.start_with?("動詞", "形容詞") }
+
+          false
         end
+        # rubocop:enable Metrics/CyclomaticComplexity
 
         def base_class_name
           self.class.name.split("::").last
