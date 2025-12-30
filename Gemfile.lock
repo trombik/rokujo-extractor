@@ -157,6 +157,7 @@ DEPENDENCIES
   rspec (~> 3.0)
   rubocop (~> 1.21)
   rubocop-rspec (~> 3.8)
+  terminal-table (~> 3.0)
 
 BUNDLED WITH
    2.7.1

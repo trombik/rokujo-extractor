@@ -1,0 +1,20 @@
+#!/usr/bin/ruby
+# frozen_string_literal: true
+
+require "ruby-spacy"
+require "terminal-table"
+
+# Process Japanese text using Spacy's Ginza pipeline to extract and display
+# linguistic features.
+#
+# Stolen from: https://github.com/yohasebe/ruby-spacy
+
+text = ARGV.shift
+nlp = Spacy::Language.new("ja_ginza")
+doc = nlp.read(text)
+headings = %w[text lemma pos tag dep]
+rows = doc.map do |token|
+  [token.text, token.lemma, token.pos, token.tag, token.dep]
+end
+table = Terminal::Table.new rows: rows, headings: headings
+puts table
