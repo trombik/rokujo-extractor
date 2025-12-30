@@ -10,7 +10,8 @@ module Rokujo
 
       def run(input)
         @steps.reduce(input) do |data, step|
-          step.call(data)
+          widget = step.widget if step.respond_to? :widget
+          step.call(data, widget)
         end
       end
     end

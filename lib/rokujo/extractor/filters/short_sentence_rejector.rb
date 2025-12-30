@@ -14,8 +14,28 @@ module Rokujo
 
         # @param sentences [Array<String>] The sentence to filter.
         # @return [Array<String>] Filtered Array of String.
-        def call(sentences)
-          sentences.select { |sentence| sentence.length >= @min }
+        # @param bar [TTY::ProgressBar] Otional progress bar.
+        def call(sentences, bar = nil)
+          bar&.configure do |config|
+            config.total = sentences.count
+          end
+          selected = sentences.select do |sentence|
+            result = sentence.length >= @min
+            bar&.advance
+            result
+          end
+          bar&.finish
+          selected
+        end
+
+        def widget
+          ::TTY::ProgressBar.new("#{base_class_name} [:bar]")
+        end
+
+        private
+
+        def base_class_name
+          self.class.name.split("::").last
         end
       end
     end
