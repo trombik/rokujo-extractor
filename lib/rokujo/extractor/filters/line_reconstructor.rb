@@ -31,21 +31,40 @@ module Rokujo
         # Reconstructs the sentences in the string.
         #
         # @param raw_text [String] A string of texts.
+        # @param bar [TTY::ProgressBar] Otional progress bar.
         # @return [String]
-        def call(raw_text)
+        def call(raw_text, bar = nil)
           reconstructed = String.new
+          # create an array so that we can tell how many steps we are going to
+          # proceed to the progress bar.
+          lines = strip_with_newline(raw_text)
 
-          # make an Array of lines, rejecting empty lines.
-          lines = raw_text.split("\n").map(&:strip).reject(&:empty?)
+          # set total size of the operations
+          bar&.configure { |config| config.total = lines.count }
+
           lines.each_with_index do |line, i|
             reconstructed << line
-            next_line = lines[i + 1]
-            reconstructed << "\n" if should_break_after?(line, next_line)
+            reconstructed << "\n" if should_break_after?(line, lines[i + 1])
+            bar&.advance
           end
+          bar&.finish
           reconstructed
         end
 
+        def widget
+          ::TTY::ProgressBar.new("#{base_class_name} [:bar]")
+        end
+
         private
+
+        # Returns Array of line, striped, empty lines removed.
+        def strip_with_newline(raw_text)
+          raw_text.split("\n").map(&:strip).reject(&:empty?)
+        end
+
+        def base_class_name
+          self.class.name.split("::").last
+        end
 
         def should_break_after?(current, next_line)
           return true if next_line.nil? # 最終行

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Adder
-  def call(input)
+  def call(input, _widget)
     input + 1
   end
 end
