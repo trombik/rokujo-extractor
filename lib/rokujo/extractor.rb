@@ -12,6 +12,7 @@ require_relative "extractor/jsonl"
 require_relative "extractor/helpers"
 require_relative "extractor/filters"
 require_relative "extractor/pipeline"
+require_relative "extractor/metadata"
 
 module Rokujo
   # A factory to extratc texts from files.

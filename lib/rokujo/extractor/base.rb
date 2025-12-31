@@ -4,6 +4,7 @@ require_relative "helpers"
 require_relative "pipeline"
 require_relative "filters"
 require_relative "formatters"
+require_relative "concerns"
 
 module Rokujo
   module Extractor
