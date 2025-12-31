@@ -11,6 +11,7 @@ PATH
       thor
       tty-progressbar
       tty-spinner
+      uuid7
 
 GEM
   remote: https://rubygems.org/
@@ -145,6 +146,9 @@ GEM
       tty-cursor (~> 0.7)
     unicode-display_width (2.6.0)
     uri (1.1.1)
+    uuid7 (0.2.0)
+      zeitwerk (~> 2.4)
+    zeitwerk (2.7.4)
 
 PLATFORMS
   amd64-freebsd-15

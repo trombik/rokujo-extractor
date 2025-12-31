@@ -51,6 +51,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "thor"
   spec.add_dependency "tty-progressbar"
   spec.add_dependency "tty-spinner"
+  spec.add_dependency "uuid7"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
