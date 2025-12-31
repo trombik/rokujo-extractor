@@ -6,6 +6,7 @@ RSpec.describe Rokujo::Extractor::Metadata::Text do
   let(:metadata) { described_class.new(path) }
   let(:path) { Pathname.new "/bar/foo.txt" }
   let(:stat) { instance_double(File::Stat) }
+  let(:now) { Time.now.utc.iso8601 }
 
   before do
     allow(File).to receive(:read).and_return("some contents")
@@ -41,10 +42,26 @@ RSpec.describe Rokujo::Extractor::Metadata::Text do
   describe "#created_at" do
     context "when OS_TYPE is :bsd" do
       it "returns birthtime" do
-        now = Time.now.utc.iso8601
         stub_const("#{Rokujo::Extractor::Concerns::SystemSpecific}::OS_TYPE", :bsd)
-        allow(stat).to receive(:birthtime).and_return now
-        allow(File).to receive(:stat).and_return(stat)
+        allow(metadata).to receive(:birthtime).and_return(now)
+
+        expect(metadata.created_at).to eq now
+      end
+    end
+
+    context "when OS_TYPE is :linux" do
+      it "returns birthtime" do
+        stub_const("#{Rokujo::Extractor::Concerns::SystemSpecific}::OS_TYPE", :linux)
+        allow(metadata).to receive(:birthtime).and_return(now)
+
+        expect(metadata.created_at).to eq now
+      end
+    end
+
+    context "when OS_TYPE is :macos" do
+      it "returns birthtime" do
+        stub_const("#{Rokujo::Extractor::Concerns::SystemSpecific}::OS_TYPE", :macos)
+        allow(metadata).to receive(:birthtime).and_return(now)
 
         expect(metadata.created_at).to eq now
       end
@@ -52,7 +69,6 @@ RSpec.describe Rokujo::Extractor::Metadata::Text do
 
     context "when OS_TYPE is :windows" do
       it "returns ctime" do
-        now = Time.now.utc.iso8601
         stub_const("#{Rokujo::Extractor::Concerns::SystemSpecific}::OS_TYPE", :windows)
         allow(stat).to receive(:ctime).and_return now
         allow(File).to receive(:stat).and_return(stat)
@@ -64,7 +80,6 @@ RSpec.describe Rokujo::Extractor::Metadata::Text do
 
   describe "#updated_at" do
     it "returns mtime" do
-      now = Time.now.utc.iso8601
       allow(stat).to receive(:mtime).and_return now
       allow(File).to receive(:stat).and_return(stat)
 

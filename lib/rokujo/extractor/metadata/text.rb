@@ -35,9 +35,13 @@ module Rokujo
         def created_at
           on_os_type(
             windows: -> { File.stat(location).ctime },
-            default: -> { File.stat(location).birthtime }
+            default: -> { birthtime(location) }
           )
-        rescue NotImplementedError
+        end
+
+        def birthtime(location)
+          File.stat(location).birthtime
+        rescue NotImplementedError, NoMethodError
           updated_at
         end
 
