@@ -42,8 +42,7 @@ module Rokujo
           File.stat(location).mtime
         end
 
-        def to_h
-        end
+        def to_h; end
 
         private
 
@@ -55,4 +54,3 @@ module Rokujo
     end
   end
 end
-

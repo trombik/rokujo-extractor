@@ -9,8 +9,7 @@ RSpec.describe Rokujo::Extractor::Metadata::Text do
   before do
     allow(File).to receive(:read).and_return("some contents")
     location = instance_double(Pathname)
-    allow(location).to receive(:realpath).and_return(path.to_s)
-    allow(location).to receive(:basename).and_return("foo")
+    allow(location).to receive_messages(realpath: path.to_s, basename: "foo")
     allow(metadata).to receive(:location).and_return(location)
   end
 
@@ -28,7 +27,7 @@ RSpec.describe Rokujo::Extractor::Metadata::Text do
 
   describe "#author" do
     it "returns nil" do
-      expect(metadata.author).to be nil
+      expect(metadata.author).to be_nil
     end
   end
 
@@ -41,7 +40,7 @@ RSpec.describe Rokujo::Extractor::Metadata::Text do
   describe "#created_at" do
     it "returns birthtime" do
       now = Time.now.utc.iso8601
-      stat = instance_double("File::Stat")
+      stat = instance_double(File::Stat)
       allow(stat).to receive(:birthtime).and_return now
       allow(File).to receive(:stat).and_return(stat)
 
@@ -52,7 +51,7 @@ RSpec.describe Rokujo::Extractor::Metadata::Text do
   describe "#updated_at" do
     it "returns mtime" do
       now = Time.now.utc.iso8601
-      stat = instance_double("File::Stat")
+      stat = instance_double(File::Stat)
       allow(stat).to receive(:mtime).and_return now
       allow(File).to receive(:stat).and_return(stat)
 
