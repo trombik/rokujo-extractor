@@ -5,6 +5,7 @@ require "spec_helper"
 RSpec.describe Rokujo::Extractor::Metadata::Text do
   let(:metadata) { described_class.new(path) }
   let(:path) { Pathname.new "/bar/foo.txt" }
+  let(:stat) { instance_double(File::Stat) }
 
   before do
     allow(File).to receive(:read).and_return("some contents")
@@ -38,20 +39,32 @@ RSpec.describe Rokujo::Extractor::Metadata::Text do
   end
 
   describe "#created_at" do
-    it "returns birthtime" do
-      now = Time.now.utc.iso8601
-      stat = instance_double(File::Stat)
-      allow(stat).to receive(:birthtime).and_return now
-      allow(File).to receive(:stat).and_return(stat)
+    context "when OS_TYPE is :bsd" do
+      it "returns birthtime" do
+        now = Time.now.utc.iso8601
+        stub_const("#{Rokujo::Extractor::Concerns::SystemSpecific}::OS_TYPE", :bsd)
+        allow(stat).to receive(:birthtime).and_return now
+        allow(File).to receive(:stat).and_return(stat)
 
-      expect(metadata.created_at).to eq now
+        expect(metadata.created_at).to eq now
+      end
+    end
+
+    context "when OS_TYPE is :windows" do
+      it "returns ctime" do
+        now = Time.now.utc.iso8601
+        stub_const("#{Rokujo::Extractor::Concerns::SystemSpecific}::OS_TYPE", :windows)
+        allow(stat).to receive(:ctime).and_return now
+        allow(File).to receive(:stat).and_return(stat)
+
+        expect(metadata.created_at).to eq now
+      end
     end
   end
 
   describe "#updated_at" do
     it "returns mtime" do
       now = Time.now.utc.iso8601
-      stat = instance_double(File::Stat)
       allow(stat).to receive(:mtime).and_return now
       allow(File).to receive(:stat).and_return(stat)
 

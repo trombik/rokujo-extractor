@@ -12,6 +12,7 @@ module Rokujo
         attr_reader :acquired_at, :location
 
         include Rokujo::Extractor::Concerns::Identifiable
+        include Rokujo::Extractor::Concerns::SystemSpecific
 
         def initialize(location, opts = {})
           super
@@ -32,8 +33,10 @@ module Rokujo
         end
 
         def created_at
-          # TODO: support Windows (use ctime instead of birthtime)
-          File.stat(location).birthtime
+          on_os_type(
+            windows: -> { File.stat(location).ctime },
+            default: -> { File.stat(location).birthtime }
+          )
         rescue NotImplementedError
           updated_at
         end
