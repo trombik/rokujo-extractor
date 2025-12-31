@@ -10,12 +10,12 @@ module Rokujo
       module Identifiable
         # Generates UUID v7
         def uuid
-          if ::SecureRandom.respond_to?(:uuid_v7)
-            ::SecureRandom.uuid_v7
-          else
-            require "uuid7"
-            ::UUID7.generate
-          end
+          @uuid ||= if ::SecureRandom.respond_to?(:uuid_v7)
+                      ::SecureRandom.uuid_v7
+                    else
+                      require "uuid7"
+                      ::UUID7.generate
+                    end
         end
 
         # Generates a SHA256 hex digest from `content`.
@@ -25,7 +25,7 @@ module Rokujo
         #   hexdigest(File.read(path))
         #
         def hexdigest(content)
-          ::Digest::SHA256.hexdigest(content)
+          @hexdigest ||= ::Digest::SHA256.hexdigest(content)
         end
       end
     end
