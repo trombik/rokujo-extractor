@@ -3,6 +3,7 @@
 require "marcel"
 
 require_relative "extractor/version"
+require_relative "extractor/errors"
 require_relative "extractor/base"
 require_relative "extractor/text"
 require_relative "extractor/docx"
