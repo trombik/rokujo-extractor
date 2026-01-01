@@ -10,8 +10,8 @@ module Rokujo
       # Metadata for PDF file on local file system.
       class PDF < Base
         def initialize(location, opts = {})
-          doc
           super
+          doc
         end
 
         def title
@@ -23,7 +23,7 @@ module Rokujo
         end
 
         def uri
-          URI::File.build([nil, Pathname.new(location).realpath])
+          URI::File.build([nil, Pathname.new(@location).realpath.to_s])
         end
 
         def created_at
@@ -43,8 +43,9 @@ module Rokujo
         end
 
         def doc
-          @doc ||= ::PDF::Reader.new(location)
-          @acquired_at = Time.now.utc.iso8601
+          @doc ||= ::PDF::Reader.new(@location)
+          @acquired_at ||= Time.now.utc.iso8601
+          @doc
         end
 
         def extra_attributes

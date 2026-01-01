@@ -16,7 +16,6 @@ module Rokujo
 
         def initialize(location, opts = {})
           super
-          @location = Pathname.new(location)
           doc
         end
 
@@ -53,7 +52,8 @@ module Rokujo
 
         def doc
           @doc ||= ::File.read(location)
-          @acquired_at = Time.now.utc.iso8601
+          @acquired_at ||= Time.now.utc.iso8601
+          @doc
         end
       end
     end

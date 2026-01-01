@@ -8,6 +8,12 @@ RSpec.describe Rokujo::Extractor::Base do
       常用漢字表にある漢字を主に使用する。
     TEXT
   end
+  let(:metadata) { instance_double(Rokujo::Extractor::Metadata::Base) }
+
+  before do
+    allow(metadata).to receive(:uuid).and_return("uuid")
+    allow(extractor).to receive(:metadata).and_return(metadata)
+  end
 
   describe "#new" do
     it "does not raise" do
@@ -94,6 +100,12 @@ RSpec.describe Rokujo::Extractor::Base do
       extracted_sentences = extractor.extract_sentences.map { |s| s[:content] }
 
       expect(extracted_sentences).to include input.tr("● ", "")
+    end
+  end
+
+  describe "#extract_metadata" do
+    it "raises NotImplementedError" do
+      expect { extractor.extract_metadata }.to raise_error Rokujo::Extractor::Errors::NotImplementedError
     end
   end
 end

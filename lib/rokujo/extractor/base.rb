@@ -11,14 +11,14 @@ module Rokujo
     # The base class of Extractors
     class Base
       include Rokujo::Extractor::Helpers
+      include Rokujo::Extractor::Errors
 
-      attr_reader :file_path, :metadata
+      attr_reader :location
 
       DEFAULT_SPACY_MODEL_NAME = "ja_ginza"
 
-      def initialize(file_path, **opts)
-        @file_path = file_path
-        @metadata = opts.fetch(:metadata, {})
+      def initialize(location, opts = {})
+        @location = Pathname.new(location)
         @nlp = opts.fetch(:model) do |key|
           warn "#{key} is not passed. Using #{DEFAULT_SPACY_MODEL_NAME}"
           Spacy::Language.new(DEFAULT_SPACY_MODEL_NAME)
@@ -35,15 +35,26 @@ module Rokujo
           {
             content: s.strip,
             line_number: i + 1,
-            meta_info: @metadata
+            uuid: metadata.uuid
           }
         end
+      end
+
+      # Extracts metadata from a resource.
+      #
+      # @return [Object] Metadata object.
+      def extract_metadata
+        raise NotImplementedError, "#{self.class} must implement #{__method__}"
+      end
+
+      def metadata
+        @metadata ||= extract_metadata
       end
 
       protected
 
       def raw_text
-        raise NotImplementedError, "Subclasses must implement raw_text"
+        raise NotImplementedError, "#{self.class} must implement #{__method__}"
       end
 
       private

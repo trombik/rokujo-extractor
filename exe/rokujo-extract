@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "rokujo/extractor"
+require "rokujo/extractor/formatters"
 require "thor"
 require "json"
 require "ruby-spacy"
@@ -67,11 +68,11 @@ module Rokujo
 
           case options[:format]
           when "json"
-            puts JSON.pretty_generate(results)
+            formatter = Rokujo::Extractor::Formatters::JSONL.new
+            puts formatter.call(results, formatter.widget)
           when "text"
-            results.each do |result|
-              puts result[:content]
-            end
+            formatter = Rokujo::Extractor::Formatters::Text.new
+            puts formatter.call(results, formatter.widget)
           end
         end
 

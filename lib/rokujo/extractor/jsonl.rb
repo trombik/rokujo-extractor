@@ -21,6 +21,10 @@ module Rokujo
       def file_content
         File.read(@file_path)
       end
+
+      def extract_metadata
+        Rokujo::Extractor::Metadata::JSONL.new(@location)
+      end
     end
   end
 end

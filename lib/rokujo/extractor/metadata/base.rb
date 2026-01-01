@@ -20,12 +20,12 @@ module Rokujo
           created_at
           updated_at
           acquired_at
-          uuid
         ].map(&:to_sym).freeze
 
         # These attributes are provided by this class.
         CONCRETE_ATTRIBUTES = %w[
           type
+          uuid
         ].map(&:to_sym).freeze
 
         # Mandatory attributes.
@@ -34,7 +34,7 @@ module Rokujo
         # @param location [String] The location of the resource.
         # @param ops [Hash] Optional options.
         def initialize(location, opts = {})
-          @location = location
+          @location = Pathname.new(location)
           @opts = opts
         end
 

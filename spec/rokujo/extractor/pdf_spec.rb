@@ -10,10 +10,12 @@ RSpec.describe Rokujo::Extractor::PDF do
       常用漢字表にある漢字を主に使用する。
     TEXT
   end
+  let(:metadata) { instance_double(Rokujo::Extractor::Metadata::Base) }
 
   before do
-    allow(extractor).to receive(:reader).and_return(reader)
+    allow(extractor).to receive_messages(reader: reader, extract_metadata: metadata)
     allow(reader).to receive(:pages).and_return(pages)
+    allow(metadata).to receive(:uuid).and_return("uuid")
   end
 
   it "returns correct number of the extracted texts" do
