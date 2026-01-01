@@ -9,10 +9,11 @@ RSpec.describe Rokujo::Extractor::Metadata::Text do
   let(:now) { Time.now.utc.iso8601 }
 
   before do
-    allow(File).to receive(:read).and_return("some contents")
     location = instance_double(Pathname)
     allow(location).to receive_messages(realpath: path.to_s, basename: "foo")
-    allow(metadata).to receive(:location).and_return(location)
+    allow(File).to receive_messages(stat: stat, read: "some contents")
+    allow(metadata).to receive_messages(birthtime: now, location: location)
+    allow(stat).to receive_messages(ctime: now, mtime: now)
   end
 
   describe "#new" do
@@ -29,7 +30,7 @@ RSpec.describe Rokujo::Extractor::Metadata::Text do
 
   describe "#author" do
     it "returns nil" do
-      expect(metadata.author).to be_nil
+      expect(metadata.author).to be_empty
     end
   end
 
@@ -43,7 +44,6 @@ RSpec.describe Rokujo::Extractor::Metadata::Text do
     context "when OS_TYPE is :bsd" do
       it "returns birthtime" do
         stub_const("#{Rokujo::Extractor::Concerns::SystemSpecific}::OS_TYPE", :bsd)
-        allow(metadata).to receive(:birthtime).and_return(now)
 
         expect(metadata.created_at).to eq now
       end
@@ -52,7 +52,6 @@ RSpec.describe Rokujo::Extractor::Metadata::Text do
     context "when OS_TYPE is :linux" do
       it "returns birthtime" do
         stub_const("#{Rokujo::Extractor::Concerns::SystemSpecific}::OS_TYPE", :linux)
-        allow(metadata).to receive(:birthtime).and_return(now)
 
         expect(metadata.created_at).to eq now
       end
@@ -61,7 +60,6 @@ RSpec.describe Rokujo::Extractor::Metadata::Text do
     context "when OS_TYPE is :macos" do
       it "returns birthtime" do
         stub_const("#{Rokujo::Extractor::Concerns::SystemSpecific}::OS_TYPE", :macos)
-        allow(metadata).to receive(:birthtime).and_return(now)
 
         expect(metadata.created_at).to eq now
       end
@@ -70,8 +68,6 @@ RSpec.describe Rokujo::Extractor::Metadata::Text do
     context "when OS_TYPE is :windows" do
       it "returns ctime" do
         stub_const("#{Rokujo::Extractor::Concerns::SystemSpecific}::OS_TYPE", :windows)
-        allow(stat).to receive(:ctime).and_return now
-        allow(File).to receive(:stat).and_return(stat)
 
         expect(metadata.created_at).to eq now
       end
@@ -80,16 +76,12 @@ RSpec.describe Rokujo::Extractor::Metadata::Text do
 
   describe "#updated_at" do
     it "returns mtime" do
-      allow(stat).to receive(:mtime).and_return now
-      allow(File).to receive(:stat).and_return(stat)
-
       expect(metadata.updated_at).to eq now
     end
   end
 
   describe "#to_h" do
     it "returns metadata as a Hash" do
-      pending "Not implemented yet"
       expect(metadata.to_h).to be_a Hash
     end
   end

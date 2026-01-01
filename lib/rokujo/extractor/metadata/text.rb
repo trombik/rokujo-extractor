@@ -25,7 +25,7 @@ module Rokujo
         end
 
         def author
-          nil
+          ""
         end
 
         def uri
@@ -48,8 +48,6 @@ module Rokujo
         def updated_at
           File.stat(location).mtime
         end
-
-        def to_h; end
 
         private
 

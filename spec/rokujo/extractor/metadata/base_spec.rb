@@ -12,46 +12,42 @@ RSpec.describe Rokujo::Extractor::Metadata::Base do
     end
   end
 
+  describe "#type" do
+    it "extracts type name from class name" do
+      stub_classes = %w[
+        What::Ever::Metadata::Text
+        What::Ever::Metadata::Docx::GoogleDrive
+      ]
+      stabbed_instances = stub_classes.map do |classname|
+        # create a stubbed subclass of described_class, and create an instance
+        stub_const(classname, Class.new(described_class)).new("/foo")
+      end
+
+      expect(stabbed_instances.map(&:type)).to match_array(%w[Text Docx::GoogleDrive])
+    end
+  end
+
+  describe "CORE_ATTRIBUTES_ABSTRACTED" do
+    # rubocop:disable RSpec/ExampleLength
+    specify "all the methods in it raise not_implemented_error" do
+      failed_to_raise_not_implemented_error = Class.new(StandardError).new
+
+      expect do
+        ABSTARCT_ATTRIBUTES.each do |attr|
+          metadata.send(attr)
+          raise failed_to_raise_not_implemented_error
+        rescue not_implemented_error
+          # ignore because NotImplementedError is expected
+        end
+      end.not_to raise_error failed_to_raise_not_implemented_error
+    end
+    # rubocop:enable RSpec/ExampleLength
+  end
+
   describe "#to_json" do
     it "returns String" do
       allow(metadata).to receive(:to_h).and_return({ foo: "bar" })
       expect(metadata.to_json).to be_a String
-    end
-  end
-
-  describe "#title" do
-    it "raises Rokujo::Extractor::Errors::NotImplementedError" do
-      expect { metadata.title }.to raise_error not_implemented_error
-    end
-  end
-
-  describe "#author" do
-    it "raises Rokujo::Extractor::Errors::NotImplementedError" do
-      expect { metadata.author }.to raise_error not_implemented_error
-    end
-  end
-
-  describe "#uri" do
-    it "raises Rokujo::Extractor::Errors::NotImplementedError" do
-      expect { metadata.uri }.to raise_error not_implemented_error
-    end
-  end
-
-  describe "#created_at" do
-    it "raises Rokujo::Extractor::Errors::NotImplementedError" do
-      expect { metadata.created_at }.to raise_error not_implemented_error
-    end
-  end
-
-  describe "#updated_at" do
-    it "raises Rokujo::Extractor::Errors::NotImplementedError" do
-      expect { metadata.updated_at }.to raise_error not_implemented_error
-    end
-  end
-
-  describe "#acquired_at" do
-    it "raises Rokujo::Extractor::Errors::NotImplementedError" do
-      expect { metadata.acquired_at }.to raise_error not_implemented_error
     end
   end
 

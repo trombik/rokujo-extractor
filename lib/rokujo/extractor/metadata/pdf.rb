@@ -46,6 +46,12 @@ module Rokujo
           @doc ||= ::PDF::Reader.new(location)
           @acquired_at = Time.now.utc.iso8601
         end
+
+        def extra_attributes
+          {
+            Producer: doc.info[:Producer]
+          }
+        end
       end
     end
   end

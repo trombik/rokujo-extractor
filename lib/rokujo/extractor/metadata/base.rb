@@ -12,11 +12,35 @@ module Rokujo
 
         attr_reader :opts, :location
 
+        # These attributes are expected to be impplemented in subclasses.
+        ABSTARCT_ATTRIBUTES = %w[
+          title
+          author
+          uri
+          created_at
+          updated_at
+          acquired_at
+          uuid
+        ].map(&:to_sym).freeze
+
+        # These attributes are provided by this class.
+        CONCRETE_ATTRIBUTES = %w[
+          type
+        ].map(&:to_sym).freeze
+
+        # Mandatory attributes.
+        CORE_ATTRIBUTES = (ABSTARCT_ATTRIBUTES + CONCRETE_ATTRIBUTES).freeze
+
         # @param location [String] The location of the resource.
         # @param ops [Hash] Optional options.
         def initialize(location, opts = {})
           @location = location
           @opts = opts
+        end
+
+        # The file type.
+        def type
+          self.class.name.split("Metadata::").last
         end
 
         # The title, e.g., the content of <title> tag in HTML.
@@ -52,14 +76,35 @@ module Rokujo
 
         # Returns metadata as a Hash
         def to_h
-          raise NotImplementedError, "#{self.class} does not implement #{__method__}"
+          {
+            core: core_attributes,
+            extra: extra_attributes
+          }
         end
+
+        alias attributes to_h
 
         # Returns metadata as a JSON string.
         #
         # @param args [Array] Optional argument for `JSON#generate`.
         def to_json(*args)
           JSON.generate(to_h, *args)
+        end
+
+        private
+
+        def core_attributes
+          hash = {}
+          CORE_ATTRIBUTES.each do |attr|
+            value = send(attr)
+            hash[attr] = value.nil? ? "" : value
+          end
+          hash
+        end
+
+        # Optional attributes subclass provides.
+        def extra_attributes
+          {}
         end
       end
     end
