@@ -10,7 +10,7 @@ module Rokujo
           bar&.configure { |config| config.total = sentences.count }
           result = sentences.map do |s|
             bar&.advance
-            s.to_s
+            s[:content]
           end
           bar&.finish
           result.join("\n")
