@@ -23,7 +23,7 @@ RSpec.describe Rokujo::Extractor::PDF do
   end
 
   it "runs pdftotext and returns the extracted texts" do
-    extracted_sentences = extractor.extract_sentences.map { |s| s[:content] }
+    extracted_sentences = extractor.extract_sentences.map { |s| s[:text] }
 
     expect(extracted_sentences).to eq text.split("\n")
   end

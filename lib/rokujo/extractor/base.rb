@@ -33,9 +33,11 @@ module Rokujo
         pipeline = Pipeline.new(*pipeline_filters, widget_enable: @widget_enable)
         pipeline.run(content).map.with_index do |s, i|
           {
-            content: s.strip,
-            line_number: i + 1,
-            uuid: metadata.uuid
+            text: s.strip,
+            meta: {
+              line_number: i + 1,
+              uuid: metadata.uuid
+            }
           }
         end
       end
