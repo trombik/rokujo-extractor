@@ -28,6 +28,9 @@ module Rokujo
 
       desc "extract FILE [FILE ...]", "Extract sentences from file(s) (.pdf, .docx, .txt)"
       method_option :format, aliases: "-f", default: "text", desc: "Output format: text or json"
+      method_option :uuid, type: :string, default: "file", enum: %w[file record],
+                           desc: "Generate UUID per record or per file (.jsonl file only)"
+      method_option :progress, type: :boolean, default: true, desc: "Show progress."
       default_task :extract
 
       # rubocop:disable Metrics/MethodLength
@@ -35,11 +38,14 @@ module Rokujo
       def extract(*file_paths)
         show_help_and_exit if file_paths.empty?
 
-        spinner = TTY::Spinner.new("[:spinner] Loading #{Rokujo::Extractor::Base::DEFAULT_SPACY_MODEL_NAME} ...",
-                                   format: :dots)
-        spinner.auto_spin
+        spinner = if options[:progress]
+                    TTY::Spinner.new("[:spinner] Loading #{Rokujo::Extractor::Base::DEFAULT_SPACY_MODEL_NAME} ...",
+                                     format: :dots)
+                  end
+
+        spinner&.auto_spin
         @model = Spacy::Language.new(Rokujo::Extractor::Base::DEFAULT_SPACY_MODEL_NAME)
-        spinner.stop("Done")
+        spinner&.stop("Done")
 
         file_paths.each do |path|
           results = extract_sentences(path)
@@ -56,7 +62,11 @@ module Rokujo
       # The block is for non-command methods
       no_commands do
         def extract_sentences(path)
-          extractor = Rokujo::Extractor.create(path, model: @model, metadata: { source: File.basename(path) })
+          extractor = Rokujo::Extractor.create(path,
+                                               model: @model,
+                                               metadata: { source: File.basename(path) },
+                                               uuid: options[:uuid],
+                                               widget_enable: options[:progress])
           extractor.extract_sentences
         rescue StandardError => e
           add_error "Error processing #{path}: #{e.class}\n#{e.message}\n#{e.backtrace.join("\n")}"
@@ -74,7 +84,8 @@ module Rokujo
           when "csv"
             formatter = Rokujo::Extractor::Formatters::CSV.new
           end
-          puts formatter.call(results, formatter.widget)
+          widget = options[:progress] ? formatter.widget : nil
+          puts formatter.call(results, widget)
         end
 
         def show_help_and_exit

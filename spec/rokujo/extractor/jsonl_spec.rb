@@ -2,77 +2,66 @@
 
 RSpec.describe Rokujo::Extractor::JSONL do
   let(:extractor) { described_class.new("/foo.jsonl", model: model, widget_enable: false) }
-  let(:text) do
-    <<~TEXT
-      本文を、敬体（ですます調）あるいは常体（である調）のどちらかに統一する。
-      常用漢字表にある漢字を主に使用する。
-    TEXT
-  end
-  let(:enum) { text.lines.map { |e| JSON.generate({ text: e }) }.to_enum }
 
   before do
     # as `#file_content` returns Enumerator, create an array, which can become
     # Enumerator.
+    enum = [
+      '{"text":"本文を、敬体（ですます調）あるいは常体（である調）のどちらかに統一する。"}',
+      '{"text":"常用漢字表にある漢字を主に使用する。"}'
+    ].to_enum
+    metadata = instance_double(Rokujo::Extractor::Metadata::JSONL)
 
-    # retrun enum, which responds to `#with_index` called in
-    # `#extracted_sentences`.
-    allow(extractor).to receive(:file_content).and_return(enum)
+    allow(extractor).to receive_messages(
+      # retrun enum, which responds to `#with_index` called in
+      # `#extracted_sentences`.
+      file_content: enum,
+      extract_metadata: metadata
+    )
+    allow(metadata).to receive(:uuid).and_return("file_uuid")
   end
 
   describe "#extract_sentences" do
     it "returns correct number of lines" do
-      expect(extractor.extract_sentences.count).to eq text.lines.count
+      expect(extractor.extract_sentences.count).to eq 2
     end
 
-    it "returns the given texts" do
-      extracted_sentences = extractor.extract_sentences.map { |s| s[:text] }
-
-      expect(extracted_sentences).to eq text.lines(chomp: true)
-    end
-
-    context "when per_segment_uuid is true" do
+    context "when uuid option is not specified" do
       let(:extractor) do
-        described_class.new("/foo.json", model: model, widget_enable: false, per_segment_uuid: true)
+        described_class.new("/foo.json", model: model, widget_enable: false)
       end
 
-      before do
-        metadata = instance_double(Rokujo::Extractor::Metadata::JSONL)
-        allow(metadata).to receive(:uuid).and_return("metadata_uuid")
-        allow(extractor).to receive_messages(
-          extract_metadata: metadata,
-          file_content: enum
-        )
+      specify "each element has the file's UUID (default)" do
+        uuids = extractor.extract_sentences.map { |e| e[:meta][:uuid] }
+        expect(uuids).to all(eq "file_uuid")
+      end
+    end
+
+    context "when uuid option is `:file`" do
+      let(:extractor) do
+        described_class.new("/foo.json", model: model, widget_enable: false, uuid: :file)
+      end
+
+      specify "each element has the file's UUID" do
+        uuids = extractor.extract_sentences.map { |e| e[:meta][:uuid] }
+        expect(uuids).to all(eq "file_uuid")
+      end
+    end
+
+    context "when uuid option is `:record`" do
+      let(:extractor) do
+        described_class.new("/foo.json", model: model, widget_enable: false, uuid: :record)
       end
 
       specify "each element has a uniq UUID" do
-        uuids = extractor.extract_sentences.map { |s| s[:meta][:uuid] }
+        uuids = extractor.extract_sentences.map { |e| e[:meta][:uuid] }
         uniq_uuids = uuids.uniq
-
         expect(uuids).to match_array uniq_uuids
       end
 
-      specify "no element has metadata_uuid" do
-        uuids = extractor.extract_sentences.map { |s| s[:meta][:uuid] }
-
-        expect(uuids).not_to include "metadata_uuid"
-      end
-    end
-
-    context "when per_segment_uuid is false" do
-      let(:extractor) do
-        described_class.new("/foo.json", model: model, widget_enable: false, per_segment_uuid: false)
-      end
-
-      specify "each element not use the same metadata_uuid" do
-        metadata = instance_double(Rokujo::Extractor::Metadata::JSONL)
-        allow(metadata).to receive(:uuid).and_return("metadata_uuid")
-        allow(extractor).to receive_messages(
-          extract_metadata: metadata,
-          file_content: enum
-        )
-        uuids = extractor.extract_sentences.map { |s| s[:meta][:uuid] }
-
-        expect(uuids).to all(eq "metadata_uuid")
+      specify "no element has the file's UUID" do
+        uuids = extractor.extract_sentences.map { |e| e[:meta][:uuid] }
+        expect(uuids).not_to include("file_uuid")
       end
     end
   end
