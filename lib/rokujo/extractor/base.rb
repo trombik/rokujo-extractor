@@ -13,17 +13,18 @@ module Rokujo
       include Rokujo::Extractor::Helpers
       include Rokujo::Extractor::Errors
 
-      attr_reader :location
+      attr_reader :location, :opts
 
       DEFAULT_SPACY_MODEL_NAME = "ja_ginza"
 
       def initialize(location, opts = {})
         @location = Pathname.new(location)
-        @nlp = opts.fetch(:model) do |key|
+        @opts = opts
+        @nlp = @opts.fetch(:model) do |key|
           warn "#{key} is not passed. Using #{DEFAULT_SPACY_MODEL_NAME}"
           Spacy::Language.new(DEFAULT_SPACY_MODEL_NAME)
         end
-        @widget_enable = opts.fetch(:widget_enable, true)
+        @widget_enable = @opts.fetch(:widget_enable, true)
       end
 
       def extract_sentences
