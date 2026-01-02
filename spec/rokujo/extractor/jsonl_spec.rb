@@ -8,15 +8,15 @@ RSpec.describe Rokujo::Extractor::JSONL do
       常用漢字表にある漢字を主に使用する。
     TEXT
   end
+  let(:enum) { text.lines.map { |e| JSON.generate({ text: e }) }.to_enum }
 
   before do
     # as `#file_content` returns Enumerator, create an array, which can become
     # Enumerator.
-    array = text.lines.map { |e| JSON.generate({ text: e }) }
 
     # retrun enum, which responds to `#with_index` called in
     # `#extracted_sentences`.
-    allow(extractor).to receive(:file_content).and_return(array.to_enum)
+    allow(extractor).to receive(:file_content).and_return(enum)
   end
 
   describe "#extract_sentences" do
@@ -28,6 +28,52 @@ RSpec.describe Rokujo::Extractor::JSONL do
       extracted_sentences = extractor.extract_sentences.map { |s| s[:text] }
 
       expect(extracted_sentences).to eq text.lines(chomp: true)
+    end
+
+    context "when per_segment_uuid is true" do
+      let(:extractor) do
+        described_class.new("/foo.json", model: model, widget_enable: false, per_segment_uuid: true)
+      end
+
+      before do
+        metadata = instance_double(Rokujo::Extractor::Metadata::JSONL)
+        allow(metadata).to receive(:uuid).and_return("metadata_uuid")
+        allow(extractor).to receive_messages(
+          extract_metadata: metadata,
+          file_content: enum
+        )
+      end
+
+      specify "each element has a uniq UUID" do
+        uuids = extractor.extract_sentences.map { |s| s[:meta][:uuid] }
+        uniq_uuids = uuids.uniq
+
+        expect(uuids).to match_array uniq_uuids
+      end
+
+      specify "no element has metadata_uuid" do
+        uuids = extractor.extract_sentences.map { |s| s[:meta][:uuid] }
+
+        expect(uuids).not_to include "metadata_uuid"
+      end
+    end
+
+    context "when per_segment_uuid is false" do
+      let(:extractor) do
+        described_class.new("/foo.json", model: model, widget_enable: false, per_segment_uuid: false)
+      end
+
+      specify "each element not use the same metadata_uuid" do
+        metadata = instance_double(Rokujo::Extractor::Metadata::JSONL)
+        allow(metadata).to receive(:uuid).and_return("metadata_uuid")
+        allow(extractor).to receive_messages(
+          extract_metadata: metadata,
+          file_content: enum
+        )
+        uuids = extractor.extract_sentences.map { |s| s[:meta][:uuid] }
+
+        expect(uuids).to all(eq "metadata_uuid")
+      end
     end
   end
 end
