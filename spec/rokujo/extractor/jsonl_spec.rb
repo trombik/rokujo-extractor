@@ -20,7 +20,7 @@ RSpec.describe Rokujo::Extractor::JSONL do
     end
 
     it "returns the given texts" do
-      extracted_sentences = extractor.extract_sentences.map { |s| s[:content] }
+      extracted_sentences = extractor.extract_sentences.map { |s| s[:text] }
 
       expect(extracted_sentences).to eq text.split("\n")
     end

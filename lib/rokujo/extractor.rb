@@ -3,6 +3,7 @@
 require "marcel"
 
 require_relative "extractor/version"
+require_relative "extractor/errors"
 require_relative "extractor/base"
 require_relative "extractor/text"
 require_relative "extractor/docx"
@@ -11,6 +12,7 @@ require_relative "extractor/jsonl"
 require_relative "extractor/helpers"
 require_relative "extractor/filters"
 require_relative "extractor/pipeline"
+require_relative "extractor/metadata"
 
 module Rokujo
   # A factory to extratc texts from files.

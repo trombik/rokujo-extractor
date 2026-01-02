@@ -14,6 +14,10 @@ module Rokujo
       rescue StandardError => e
         raise Error, "failed to read #{@file_path}: #{e.message}"
       end
+
+      def extract_metadata
+        Rokujo::Extractor::Metadata::Docx.new(@location)
+      end
     end
   end
 end

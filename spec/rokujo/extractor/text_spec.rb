@@ -21,7 +21,7 @@ RSpec.describe Rokujo::Extractor::Text do
 
   describe "#extract_sentences" do
     it "extracts text in the file" do
-      extracted_sentences = obj.extract_sentences.map { |element| element[:content] }
+      extracted_sentences = obj.extract_sentences.map { |element| element[:text] }
       expect(extracted_sentences).to eq text.split("\n")
     end
 

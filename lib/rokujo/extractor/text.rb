@@ -7,9 +7,13 @@ module Rokujo
       protected
 
       def raw_text
-        File.read(@file_path, encoding: "UTF-8")
+        File.read(@location, encoding: "UTF-8")
       rescue StandardError => e
-        raise Error, "failed to read #{@file_path}: #{e.message}"
+        raise Error, "failed to read #{@location}: #{e.message}"
+      end
+
+      def extract_metadata
+        Rokujo::Extractor::Metadata::Text.new(@location)
       end
     end
   end

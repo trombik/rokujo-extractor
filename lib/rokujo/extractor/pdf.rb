@@ -11,13 +11,17 @@ module Rokujo
       protected
 
       def reader
-        ::PDF::Reader.new(@file_path)
+        @reader ||= ::PDF::Reader.new(@location)
       rescue StandardError => e
-        raise Error, "failed to read #{@file_path}: #{e.message}"
+        raise Error, "failed to read #{@location}: #{e.message}"
       end
 
       def raw_text
-        reader.pages.map(&:text).join("\n")
+        @raw_text ||= reader.pages.map(&:text).join("\n")
+      end
+
+      def extract_metadata
+        Rokujo::Extractor::Metadata::PDF.new(@location)
       end
     end
   end
