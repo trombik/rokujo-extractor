@@ -19,8 +19,14 @@ RSpec.describe Rokujo::Extractor do
     end
 
     context "when *.docx is given" do
-      it "returns Text class" do
+      it "returns Docx class" do
         expect(described_class.create("/foo.docx", model: model)).to be_a Rokujo::Extractor::Docx
+      end
+    end
+
+    context "when *.jsonl is given" do
+      it "returns JSONL class" do
+        expect(described_class.create("/foo.jsonl", model: model)).to be_a Rokujo::Extractor::JSONL
       end
     end
 
