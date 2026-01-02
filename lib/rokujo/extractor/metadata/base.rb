@@ -74,6 +74,10 @@ module Rokujo
           raise NotImplementedError, "#{self.class} does not implement #{__method__}"
         end
 
+        def uuid
+          @uuid ||= uuid_v7
+        end
+
         # Returns metadata as a Hash
         def to_h
           {

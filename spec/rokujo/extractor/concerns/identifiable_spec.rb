@@ -5,9 +5,9 @@ require "spec_helper"
 RSpec.describe Rokujo::Extractor::Concerns::Identifiable do
   include described_class
 
-  describe "#uuid" do
+  describe "#uuid_v7" do
     it "generates uuid" do
-      expect(uuid).to be_a String
+      expect(uuid_v7).to be_a String
     end
   end
 

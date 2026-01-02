@@ -12,7 +12,7 @@ module Rokujo
         #
         # @note The method does not memomize the result because an Extractor may
         #       call this method multiple times for different values, e.g., JSONL.
-        def uuid
+        def uuid_v7
           if ::SecureRandom.respond_to?(:uuid_v7)
             ::SecureRandom.uuid_v7
           else

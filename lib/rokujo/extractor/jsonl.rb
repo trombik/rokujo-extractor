@@ -83,7 +83,7 @@ module Rokujo
           text: sentence.strip,
           meta: {
             line_number: index + 1,
-            uuid: per_segment_uuid? ? uuid : metadata.uuid
+            uuid: uuid
           }
         }
       end
@@ -93,6 +93,15 @@ module Rokujo
       # @return [Boolean] True if UUIDs should be generated per element, false to use resource UUID
       def per_segment_uuid?
         opts[:per_segment_uuid]
+      end
+
+      # Returns the appropriate UUID based on configuration.
+      #
+      # @return [String] the UUID, either per-segment (UUID v7) or per-file (cached).
+      # @note When {#per_segment_uuid?} is true, generates a new UUID v7 each time.
+      #       When false, uses the cached {Metadata#uuid} for the file.
+      def uuid
+        per_segment_uuid? ? uuid_v7 : metadata.uuid
       end
 
       # Extracts raw text content from a JSONL line.
