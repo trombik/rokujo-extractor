@@ -40,6 +40,8 @@ module Rokujo
         Docx.new(file_path, **opts)
       when ".txt"
         Text.new(file_path, **opts)
+      when ".jsonl"
+        JSONL.new(file_path, **opts)
       end
     end
 
