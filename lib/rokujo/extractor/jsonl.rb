@@ -16,7 +16,7 @@ module Rokujo
     #   {"text": "First sentence. Second sentence.", "other": "metadata"}
     #   {"text": "Another sentence. Yet another sentence. Possibly the entire sentences of a book", "other": "metadata"}
     #
-    # In that case, specify `uuid_per_jsonl_element` to `true`. Each sentence
+    # In that case, specify `per_segment_uuid` to `true`. Each sentence
     # in an element will have a UUID.
     #
     # Other dataset store a single sentence in `text` attribute.
@@ -25,7 +25,7 @@ module Rokujo
     #   {"text": "First sentence.", "other": "metadata"}
     #   {"text": "Second sentence.", "other": "metadata"}
     #
-    # In that case, specify `uuid_per_jsonl_element` to `false`. Each sentence
+    # In that case, specify `per_segment_uuid` to `false`. Each sentence
     # in the file will have a UUID.
     class JSONL < Base
       include Rokujo::Extractor::Concerns::Identifiable
@@ -34,14 +34,14 @@ module Rokujo
       #
       # @param location [String, Pathname] The path to the JSONL file to process
       # @param opts [Hash] Configuration options
-      # @option opts [Boolean] :uuid_per_jsonl_element (true) When true, generates a unique UUID
+      # @option opts [Boolean] :per_segment_uuid (true) When true, generates a unique UUID
       #                  for each element in the JSONL file. When false, uses the UUID of the
       #                  entire resource for all elements.
       def initialize(location, opts = {})
         super
         # when true, generates UUID per element in JSONL file.
         # when false, use the UUID of the resource.
-        @opts[:uuid_per_jsonl_element] = @opts.fetch(:uuid_per_jsonl_element, true)
+        @opts[:per_segment_uuid] = @opts.fetch(:per_segment_uuid, true)
       end
 
       # Extracts sentences from the JSONL file.
@@ -83,7 +83,7 @@ module Rokujo
           text: sentence.strip,
           meta: {
             line_number: index + 1,
-            uuid: uuid_per_jsonl_element? ? uuid : metadata.uuid
+            uuid: per_segment_uuid? ? uuid : metadata.uuid
           }
         }
       end
@@ -91,8 +91,8 @@ module Rokujo
       # Determines whether to generate UUIDs per JSONL element.
       #
       # @return [Boolean] True if UUIDs should be generated per element, false to use resource UUID
-      def uuid_per_jsonl_element?
-        opts[:uuid_per_jsonl_element]
+      def per_segment_uuid?
+        opts[:per_segment_uuid]
       end
 
       # Extracts raw text content from a JSONL line.
