@@ -10,6 +10,9 @@ AllCops:
   DisplayCopNames: true
   ExtraDetails: true
   DisplayStyleGuide: true
+  Exclude:
+    - "exe/rokujo-extract"
+    - "vendor/**/*"
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes
