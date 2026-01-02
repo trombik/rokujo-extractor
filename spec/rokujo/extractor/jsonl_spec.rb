@@ -8,21 +8,26 @@ RSpec.describe Rokujo::Extractor::JSONL do
       常用漢字表にある漢字を主に使用する。
     TEXT
   end
-  let(:json_string) { JSON.generate({ text: text }).to_s }
 
   before do
-    allow(extractor).to receive(:file_content).and_return(json_string)
+    # as `#file_content` returns Enumerator, create an array, which can become
+    # Enumerator.
+    array = text.lines.map { |e| JSON.generate({ text: e }) }
+
+    # retrun enum, which responds to `#with_index` called in
+    # `#extracted_sentences`.
+    allow(extractor).to receive(:file_content).and_return(array.to_enum)
   end
 
   describe "#extract_sentences" do
     it "returns correct number of lines" do
-      expect(extractor.extract_sentences.count).to eq text.split("\n").count
+      expect(extractor.extract_sentences.count).to eq text.lines.count
     end
 
     it "returns the given texts" do
       extracted_sentences = extractor.extract_sentences.map { |s| s[:text] }
 
-      expect(extracted_sentences).to eq text.split("\n")
+      expect(extracted_sentences).to eq text.lines(chomp: true)
     end
   end
 end
