@@ -69,11 +69,12 @@ module Rokujo
           case options[:format]
           when "json"
             formatter = Rokujo::Extractor::Formatters::JSONL.new
-            puts formatter.call(results, formatter.widget)
           when "text"
             formatter = Rokujo::Extractor::Formatters::Text.new
-            puts formatter.call(results, formatter.widget)
+          when "csv"
+            formatter = Rokujo::Extractor::Formatters::CSV.new
           end
+          puts formatter.call(results, formatter.widget)
         end
 
         def show_help_and_exit

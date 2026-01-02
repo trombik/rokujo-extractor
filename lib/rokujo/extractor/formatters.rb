@@ -1,5 +1,3 @@
 # frozen_string_literal: true
 
-require_relative "formatters/base"
-require_relative "formatters/text"
-require_relative "formatters/jsonl"
+Dir[File.join(__dir__, "formatters/**/*.rb")].each { |file| require file }
