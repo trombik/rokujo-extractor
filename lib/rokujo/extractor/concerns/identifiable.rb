@@ -8,14 +8,17 @@ module Rokujo
     module Concerns
       # A concern for classes to generate unique IDs
       module Identifiable
-        # Generates UUID v7
+        # Generates UUID v7.
+        #
+        # @note The method does not memomize the result because an Extractor may
+        #       call this method multiple times for different values, e.g., JSONL.
         def uuid
-          @uuid ||= if ::SecureRandom.respond_to?(:uuid_v7)
-                      ::SecureRandom.uuid_v7
-                    else
-                      require "uuid7"
-                      ::UUID7.generate
-                    end
+          if ::SecureRandom.respond_to?(:uuid_v7)
+            ::SecureRandom.uuid_v7
+          else
+            require "uuid7"
+            ::UUID7.generate
+          end
         end
 
         # Generates a SHA256 hex digest from `content`.
@@ -24,8 +27,10 @@ module Rokujo
         # @example
         #   hexdigest(File.read(path))
         #
+        # @note The method does not memomize the result because an Extractor may
+        #       call this method multiple times for different values, e.g., JSONL.
         def hexdigest(content)
-          @hexdigest ||= ::Digest::SHA256.hexdigest(content)
+          ::Digest::SHA256.hexdigest(content)
         end
       end
     end
