@@ -16,8 +16,8 @@ module Rokujo
     #   {"text": "First sentence. Second sentence.", "other": "metadata"}
     #   {"text": "Another sentence. Yet another sentence. Possibly the entire sentences of a book", "other": "metadata"}
     #
-    # In that case, specify `per_segment_uuid` to `true`. Each sentence
-    # in an element will have a UUID.
+    # In that case, specify `:uuid` to `:record`. Each sentence
+    # in *an element* will have a single UUID.
     #
     # Other dataset store a single sentence in `text` attribute.
     #
@@ -25,8 +25,8 @@ module Rokujo
     #   {"text": "First sentence.", "other": "metadata"}
     #   {"text": "Second sentence.", "other": "metadata"}
     #
-    # In that case, specify `per_segment_uuid` to `false`. Each sentence
-    # in the file will have a UUID.
+    # In that case, specify `:uuid` to `:file`. Each sentence
+    # *in the file* will have a single UUID.
     class JSONL < Base
       include Rokujo::Extractor::Concerns::Identifiable
 
@@ -34,14 +34,15 @@ module Rokujo
       #
       # @param location [String, Pathname] The path to the JSONL file to process
       # @param opts [Hash] Configuration options
-      # @option opts [Boolean] :per_segment_uuid (true) When true, generates a unique UUID
-      #                  for each element in the JSONL file. When false, uses the UUID of the
-      #                  entire resource for all elements.
+      #
+      # When `:uuid` is `:file` (default), all records in the file will have
+      # the file's UUID.
+      #
+      # When `:uuid` is `:record`, all the sentences in a JSONL record will
+      # have a unique UUID.
       def initialize(location, opts = {})
         super
-        # when true, generates UUID per element in JSONL file.
-        # when false, use the UUID of the resource.
-        @opts[:per_segment_uuid] = @opts.fetch(:per_segment_uuid, true)
+        @opts[:uuid] = @opts.fetch(:uuid, :file)
       end
 
       # Extracts sentences from the JSONL file.
@@ -56,10 +57,11 @@ module Rokujo
         sentences = []
         file_content.with_index(1) do |line, index|
           content = raw_text(line, index)
-          return [] if content.nil? || content.empty?
+          # return [] if content.nil? || content.empty?
 
+          uuid = uuid_v7 # per record UUID
           results = pipeline.run(content).map.with_index do |sentence, index|
-            sentence_to_h(sentence, index)
+            sentence_to_h(sentence, index, opts[:uuid] == :file ? metadata.uuid : uuid)
           end
           sentences.concat results
         end
@@ -78,7 +80,7 @@ module Rokujo
       # @param sentence [String] The sentence text to convert
       # @param index [Integer] The zero-based index of the sentence
       # @return [Hash] Structured sentence data with text and metadata
-      def sentence_to_h(sentence, index)
+      def sentence_to_h(sentence, index, uuid)
         {
           text: sentence.strip,
           meta: {
@@ -86,22 +88,6 @@ module Rokujo
             uuid: uuid
           }
         }
-      end
-
-      # Determines whether to generate UUIDs per JSONL element.
-      #
-      # @return [Boolean] True if UUIDs should be generated per element, false to use resource UUID
-      def per_segment_uuid?
-        opts[:per_segment_uuid]
-      end
-
-      # Returns the appropriate UUID based on configuration.
-      #
-      # @return [String] the UUID, either per-segment (UUID v7) or per-file (cached).
-      # @note When {#per_segment_uuid?} is true, generates a new UUID v7 each time.
-      #       When false, uses the cached {Metadata#uuid} for the file.
-      def uuid
-        per_segment_uuid? ? uuid_v7 : metadata.uuid
       end
 
       # Extracts raw text content from a JSONL line.
