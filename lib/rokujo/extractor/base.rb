@@ -69,7 +69,8 @@ module Rokujo
           Filters::BulletRemover.new,
           Filters::UrlRemover.new,
           Filters::JapaneseSelector.new,
-          Filters::ShortSentenceRejector.new
+          Filters::ShortSentenceRejector.new,
+          Filters::StringCleaner.new
         ]
       end
     end
