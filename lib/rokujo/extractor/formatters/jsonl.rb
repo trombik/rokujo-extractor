@@ -19,7 +19,7 @@ module Rokujo
         end
 
         def widget
-          ::TTY::ProgressBar.new("#{base_class_name} [:bar]")
+          widget_bar
         end
       end
     end
