@@ -7,24 +7,24 @@ module Rokujo
   module Extractor
     module Filters
       # A filter to remove URLs from sentences.
+      #
+      # rubocop:disable Metrics/MethodLength
       class UrlRemover < Base
-        def call(sentences, bar = nil)
-          bar&.configure { |config| config.total = sentences.count * 512 }
-
-          pattern = URI::DEFAULT_PARSER.make_regexp(%w[http https ftp ftps file])
-          results = sentences.map do |sentence|
-            result = sentence.sub(pattern, "")
-            bar&.advance(512)
-            result
+        def call(sentences, widget_enable: true)
+          self.widget_enable = widget_enable
+          with_progress(total: sentences.count * 512) do |bar|
+            pattern = URI::DEFAULT_PARSER.make_regexp(%w[http https ftp ftps file])
+            results = sentences.map do |sentence|
+              result = sentence.sub(pattern, "")
+              bar.advance(512)
+              result
+            end
+            bar.finish
+            results
           end
-          bar&.finish
-          results
-        end
-
-        def widget
-          widget_bar
         end
       end
+      # rubocop:enable Metrics/MethodLength
     end
   end
 end

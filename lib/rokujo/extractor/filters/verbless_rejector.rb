@@ -19,19 +19,17 @@ module Rokujo
 
         # @param sentences [Array<String>]
         # @return [Array<String>] Array of filtered sentences.
-        def call(sentences, bar = nil)
-          bar&.configure { |config| config.total = sentences.count * 512 }
-          selected = sentences.select do |sentence|
-            result = sentence_include_predicate?(sentence)
-            bar&.advance(512)
-            result
+        def call(sentences, widget_enable: true)
+          self.widget_enable = widget_enable
+          with_progress(total: sentences.count * 512) do |bar|
+            selected = sentences.select do |sentence|
+              result = sentence_include_predicate?(sentence)
+              bar&.advance(512)
+              result
+            end
+            bar&.finish
+            selected
           end
-          bar&.finish
-          selected
-        end
-
-        def widget
-          widget_bar
         end
 
         private

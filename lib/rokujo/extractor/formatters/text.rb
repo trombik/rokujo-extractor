@@ -6,18 +6,16 @@ module Rokujo
       # A formatter that simply outputs a plain text. Each line contains the
       # text only.
       class Text < Base
-        def call(sentences, bar = nil)
-          bar&.configure { |config| config.total = sentences.count }
-          result = sentences.map do |s|
-            bar&.advance
-            s[:content]
+        def call(sentences, widget_enable: true)
+          self.widget_enable = widget_enable
+          with_progress(count: sentences.count) do |bar|
+            result = sentences.map do |s|
+              bar.advance
+              s[:content]
+            end
+            bar.finish
+            result.join("\n")
           end
-          bar&.finish
-          result.join("\n")
-        end
-
-        def widget
-          widget_bar
         end
       end
     end

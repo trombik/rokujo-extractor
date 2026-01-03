@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "tty-progressbar"
-
 module Rokujo
   module Extractor
     module Filters
@@ -9,19 +7,17 @@ module Rokujo
       class JapaneseSelector < Base
         # @param sentences [Array<String>] The sentences to filter.
         # @param bar [TTY::ProgressBar] Otional progress bar.
-        def call(sentences, bar = nil)
-          bar&.configure { |config| config.total = sentences.count * 100 }
-          selected = sentences.select do |sentence|
-            result = ends_with_japanese?(sentence)
-            bar&.advance(100)
-            result
+        def call(sentences, widget_enable: true)
+          self.widget_enable = widget_enable
+          with_progress(total: sentences.count * 512) do |bar|
+            selected = sentences.select do |sentence|
+              result = ends_with_japanese?(sentence)
+              bar&.advance(512)
+              result
+            end
+            bar&.finish
+            selected
           end
-          bar&.finish
-          selected
-        end
-
-        def widget
-          widget_bar
         end
 
         private

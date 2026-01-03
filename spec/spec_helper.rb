@@ -20,7 +20,5 @@ RSpec.configure do |config|
   config.include SpacyHelper
 
   # disable spinner and progress bar
-  config.before(:suite) do
-    Rokujo::Extractor::Helpers.widget_enabled = false
-  end
+  ENV["CI"] = "y"
 end

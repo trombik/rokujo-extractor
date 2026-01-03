@@ -7,15 +7,17 @@ module Rokujo
     module Formatters
       # A formatter for JSONL output.
       class JSONL < Base
-        def call(sentences, bar = nil)
-          bar&.configure { |config| config.total = sentences.count }
-          result = sentences.map do |sentence|
-            json = sentence.to_json
-            bar&.advance
-            json
+        def call(sentences, widget_enable: true)
+          self.widget_enable = widget_enable
+          with_progress(count: sentences.count) do |bar|
+            result = sentences.map do |sentence|
+              json = sentence.to_json
+              bar&.advance
+              json
+            end
+            bar&.finish
+            result.join("\n")
           end
-          bar&.finish
-          result.join("\n")
         end
 
         def widget

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Rokujo::Extractor::Helpers do
+RSpec.describe Rokujo::Extractor::Concerns::Renderable do
   include described_class
 
   describe "#with_spinner" do
@@ -82,6 +82,60 @@ RSpec.describe Rokujo::Extractor::Helpers do
         expect do
           with_progress(progress_bar: bar) { raise NoMethodError }
         end.to raise_error NoMethodError
+      end
+    end
+  end
+
+  describe "#widget_enable" do
+    let(:dummy) do
+      target = described_class
+      dummy_class = Class.new do
+        include target
+      end
+      dummy_class.new
+    end
+
+    before do
+      stub_const("ENV", ENV.to_h.except("CI"))
+    end
+
+    context "when environment variable CI is defined" do
+      it "returns false" do
+        stub_const("ENV", ENV.to_h.merge("CI" => "true"))
+
+        expect(dummy.widget_enable).to be false
+      end
+    end
+
+    context "when widget_enable is explicitly set to false" do
+      it "returns false" do
+        dummy.widget_enable = false
+
+        expect(dummy.widget_enable).to be false
+      end
+    end
+
+    context "when widget_enable is explicitly set to true" do
+      it "returns true" do
+        dummy.widget_enable = true
+
+        expect(dummy.widget_enable).to be true
+      end
+    end
+
+    context "when stderr is tty" do
+      it "returns true" do
+        allow($stderr).to receive(:tty?).and_return(true)
+
+        expect(dummy.widget_enable).to be true
+      end
+    end
+
+    context "when stderr is not tty" do
+      it "returns false" do
+        allow($stderr).to receive(:tty?).and_return(false)
+
+        expect(dummy.widget_enable).to be false
       end
     end
   end

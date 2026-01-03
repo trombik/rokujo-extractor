@@ -31,28 +31,28 @@ module Rokujo
         # @param raw_text [String] A string of texts.
         # @param bar [TTY::ProgressBar] Otional progress bar.
         # @return [String]
-        def call(raw_text, bar = nil)
-          reconstructed = String.new
+        #
+        # rubocop:disable Metrics/MethodLength
+        def call(raw_text, widget_enable: true)
+          self.widget_enable = widget_enable
           # create an array so that we can tell how many steps we are going to
           # proceed to the progress bar.
           lines = strip_with_newline(raw_text)
 
           # set total size of the operations. multiply by 512 so that the bar
           # width always fits to the full console width.
-          bar&.configure { |config| config.total = lines.count * 512 }
-
-          lines.each_with_index do |line, i|
-            reconstructed << line
-            reconstructed << "\n" if should_break_after?(line, lines[i + 1])
-            bar&.advance(512)
+          with_progress(total: lines.count * 512) do |bar|
+            reconstructed = String.new
+            lines.each_with_index do |line, i|
+              reconstructed << line
+              reconstructed << "\n" if should_break_after?(line, lines[i + 1])
+              bar&.advance(512)
+            end
+            bar&.finish
+            reconstructed
           end
-          bar&.finish
-          reconstructed
         end
-
-        def widget
-          widget_bar
-        end
+        # rubocop:enable Metrics/MethodLength
 
         private
 
