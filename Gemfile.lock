@@ -6,6 +6,7 @@ PATH
       docx
       fiddle
       marcel
+      pastel
       pdf-reader
       pragmatic_segmenter
       ruby-spacy
@@ -62,6 +63,8 @@ GEM
     parser (3.3.10.0)
       ast (~> 2.4.1)
       racc
+    pastel (0.8.0)
+      tty-color (~> 0.5)
     pdf-reader (2.15.0)
       Ascii85 (>= 1.0, < 3.0, != 2.0.0)
       afm (>= 0.2.1, < 2)
@@ -137,6 +140,7 @@ GEM
     tsort (0.2.0)
     ttfunk (1.8.0)
       bigdecimal (~> 3.1)
+    tty-color (0.6.0)
     tty-cursor (0.7.1)
     tty-progressbar (0.18.3)
       strings-ansi (~> 0.2)

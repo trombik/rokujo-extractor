@@ -6,7 +6,7 @@ module Rokujo
   module Extractor
     module Filters
       # A filter that rejects sentences without verb.
-      class VerblessRejector
+      class VerblessRejector < Base
         # The default model name
         DEFAULT_SPACY_MODEL_NAME = "ja_ginza"
 
@@ -14,17 +14,16 @@ module Rokujo
         #                       The default model is DEFAULT_SPACY_MODEL_NAME
         def initialize(model: nil)
           @nlp = model || Spacy::Language.new(DEFAULT_SPACY_MODEL_NAME)
+          super()
         end
 
         # @param sentences [Array<String>]
         # @return [Array<String>] Array of filtered sentences.
         def call(sentences, bar = nil)
-          bar&.configure do |config|
-            config.total = sentences.count
-          end
+          bar&.configure { |config| config.total = sentences.count * 512 }
           selected = sentences.select do |sentence|
             result = sentence_include_predicate?(sentence)
-            bar&.advance
+            bar&.advance(512)
             result
           end
           bar&.finish
@@ -32,7 +31,7 @@ module Rokujo
         end
 
         def widget
-          ::TTY::ProgressBar.new("#{base_class_name} [:bar]")
+          widget_bar
         end
 
         private
@@ -63,10 +62,6 @@ module Rokujo
           false
         end
         # rubocop:enable Metrics/CyclomaticComplexity
-
-        def base_class_name
-          self.class.name.split("::").last
-        end
       end
     end
   end
