@@ -2,12 +2,15 @@
 
 require "shellwords"
 require "pdf-reader"
-require_relative "helpers"
 
 module Rokujo
   module Extractor
     # Extracts PDF files.
     class PDF < Base
+      def initialize(location, opts = {})
+        super
+      end
+
       protected
 
       def reader
@@ -17,7 +20,11 @@ module Rokujo
       end
 
       def raw_text
-        @raw_text ||= reader.pages.map(&:text).join("\n")
+        return @raw_text if @raw_text
+
+        with_spinner(file: location.basename) do
+          @raw_text = reader.pages.map(&:text).join("\n")
+        end
       end
 
       def extract_metadata

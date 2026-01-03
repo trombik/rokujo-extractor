@@ -17,8 +17,7 @@ module Rokujo
       # widget.
       def run(input)
         @steps.reduce(input) do |data, step|
-          widget = step.widget if @widget_enable && step.respond_to?(:widget)
-          step.call(data, widget)
+          step.call(data, widget_enable: @widget_enable)
         end
       end
     end

@@ -84,8 +84,7 @@ module Rokujo
           when "csv"
             formatter = Rokujo::Extractor::Formatters::CSV.new
           end
-          widget = options[:progress] ? formatter.widget : nil
-          puts formatter.call(results, widget)
+          puts formatter.call(results, widget_enable: options[:progress])
         end
 
         def show_help_and_exit

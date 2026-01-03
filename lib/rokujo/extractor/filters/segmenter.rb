@@ -19,16 +19,13 @@ module Rokujo
         # @param input_string [String] The text string to analyze.
         # @return [Array<String>] Array of segmented sentences.
         # @param spinner [TTY::Spinner] Otional spinner
-        def call(input_string, spinner = nil)
-          spinner&.auto_spin
-          result = PragmaticSegmenter::Segmenter.new(text: input_string, language: "ja").segment
-          spinner&.success("Done")
-          result
-        end
-
-        def widget
-          ::TTY::Spinner.new("[:spinner] #{base_class_name} Processing ... ",
-                             success_mark: pastel.green("✔"))
+        def call(input_string, widget_enable: true)
+          self.widget_enable = widget_enable
+          with_spinner do |spinner|
+            result = PragmaticSegmenter::Segmenter.new(text: input_string, language: "ja").segment
+            spinner&.success("Done")
+            result
+          end
         end
       end
     end

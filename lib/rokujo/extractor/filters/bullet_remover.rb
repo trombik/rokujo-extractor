@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "tty-progressbar"
-
 module Rokujo
   module Extractor
     module Filters
@@ -15,17 +13,16 @@ module Rokujo
       # - "※ foo"
       #
       class BulletRemover < Base
-        def call(sentences, bar = nil)
-          bar&.configure { |config| config.total = sentences.count * 512 }
-          results = sentences.map do |sentence|
-            sentence.gsub(bullet_pattern, "")
+        def call(sentences, widget_enable: true)
+          self.widget_enable = widget_enable
+          with_progress(total: sentences.count * 512) do |bar|
+            results = sentences.map do |sentence|
+              result = sentence.gsub(bullet_pattern, "")
+              bar&.advance(512)
+              result
+            end
+            results.compact
           end
-          bar&.advance(512)
-          results.compact
-        end
-
-        def widget
-          widget_bar
         end
 
         private

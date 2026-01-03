@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "helpers"
 require_relative "pipeline"
 require_relative "filters"
 require_relative "formatters"
@@ -10,8 +9,8 @@ module Rokujo
   module Extractor
     # The base class of Extractors
     class Base
-      include Rokujo::Extractor::Helpers
       include Rokujo::Extractor::Errors
+      include Rokujo::Extractor::Concerns::Renderable
 
       attr_reader :location, :opts
 
@@ -24,11 +23,11 @@ module Rokujo
           warn "#{key} is not passed. Using #{DEFAULT_SPACY_MODEL_NAME}"
           Spacy::Language.new(DEFAULT_SPACY_MODEL_NAME)
         end
-        @widget_enable = @opts.fetch(:widget_enable, true)
+        self.widget_enable = @opts.fetch(:widget_enable, true)
       end
 
       def extract_sentences
-        content = with_spinner(message: "[:spinner] Parsing ...") { raw_text }
+        content = raw_text
         return [] if content.nil? || content.empty?
 
         pipeline = Pipeline.new(*pipeline_filters, widget_enable: @widget_enable)

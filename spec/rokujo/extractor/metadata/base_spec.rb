@@ -39,7 +39,7 @@ RSpec.describe Rokujo::Extractor::Metadata::Base do
         rescue not_implemented_error
           # ignore because NotImplementedError is expected
         end
-      end.not_to raise_error failed_to_raise_not_implemented_error
+      end.not_to raise_error(failed_to_raise_not_implemented_error)
     end
     # rubocop:enable RSpec/ExampleLength
   end
