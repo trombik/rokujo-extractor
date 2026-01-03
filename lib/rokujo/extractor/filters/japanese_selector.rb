@@ -6,18 +6,14 @@ module Rokujo
   module Extractor
     module Filters
       # A filter to select Japanese sentences
-      class JapaneseSelector
-        def initialize; end
-
+      class JapaneseSelector < Base
         # @param sentences [Array<String>] The sentences to filter.
         # @param bar [TTY::ProgressBar] Otional progress bar.
         def call(sentences, bar = nil)
-          bar&.configure do |config|
-            config.total = sentences.count
-          end
+          bar&.configure { |config| config.total = sentences.count * 100 }
           selected = sentences.select do |sentence|
             result = ends_with_japanese?(sentence)
-            bar&.advance
+            bar&.advance(100)
             result
           end
           bar&.finish
@@ -25,14 +21,10 @@ module Rokujo
         end
 
         def widget
-          ::TTY::ProgressBar.new("#{base_class_name} [:bar]")
+          widget_bar
         end
 
         private
-
-        def base_class_name
-          self.class.name.split("::").last
-        end
 
         def ends_with_japanese?(sentence)
           sentence.strip.match?(/[\p{hiragana}\p{katakana}\p{han}〜ー][\p{P}\p{Pe}]?\z/)

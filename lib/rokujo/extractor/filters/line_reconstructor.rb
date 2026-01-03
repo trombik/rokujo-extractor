@@ -21,12 +21,10 @@ module Rokujo
       # これは一行になった二行目です。
       # これは最後の三行目で、二行に分かれています。
       #
-      class LineReconstructor
+      class LineReconstructor < Base
         # A line is considered as a sentence when the line length is less than
         # this value. Such lines are likely to be a title or an item name.
         MIN_CHAR_LEN_BREAK = 10
-
-        def initialize; end
 
         # Reconstructs the sentences in the string.
         #
@@ -39,31 +37,28 @@ module Rokujo
           # proceed to the progress bar.
           lines = strip_with_newline(raw_text)
 
-          # set total size of the operations
-          bar&.configure { |config| config.total = lines.count }
+          # set total size of the operations. multiply by 512 so that the bar
+          # width always fits to the full console width.
+          bar&.configure { |config| config.total = lines.count * 512 }
 
           lines.each_with_index do |line, i|
             reconstructed << line
             reconstructed << "\n" if should_break_after?(line, lines[i + 1])
-            bar&.advance
+            bar&.advance(512)
           end
           bar&.finish
           reconstructed
         end
 
         def widget
-          ::TTY::ProgressBar.new("#{base_class_name} [:bar]")
+          widget_bar
         end
 
         private
 
         # Returns Array of line, striped, empty lines removed.
         def strip_with_newline(raw_text)
-          raw_text.split("\n").map(&:strip).reject(&:empty?)
-        end
-
-        def base_class_name
-          self.class.name.split("::").last
+          raw_text.lines.map(&:strip).reject(&:empty?)
         end
 
         def should_break_after?(current, next_line)

@@ -14,27 +14,21 @@ module Rokujo
       # - "1.2.3 foo"
       # - "※ foo"
       #
-      class BulletRemover
+      class BulletRemover < Base
         def call(sentences, bar = nil)
-          bar&.configure do |config|
-            config.total = sentences.count
-          end
+          bar&.configure { |config| config.total = sentences.count * 512 }
           results = sentences.map do |sentence|
             sentence.gsub(bullet_pattern, "")
           end
-          bar&.advance
+          bar&.advance(512)
           results.compact
         end
 
         def widget
-          ::TTY::ProgressBar.new("#{base_class_name} [:bar]")
+          widget_bar
         end
 
         private
-
-        def base_class_name
-          self.class.name.split("::").last
-        end
 
         # rubocop:disable Metrics/MethodLength, Lint/DuplicateRegexpCharacterClassElement
         #

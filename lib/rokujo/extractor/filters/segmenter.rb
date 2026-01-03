@@ -15,27 +15,20 @@ module Rokujo
       #
       # ["Hello world.", "My name is Mr. Smith.", "I work for the U.S. Government and I live in the U.S.",
       # "I live in New York."]
-      class Segmenter
-        def initialize; end
-
+      class Segmenter < Base
         # @param input_string [String] The text string to analyze.
         # @return [Array<String>] Array of segmented sentences.
         # @param spinner [TTY::Spinner] Otional spinner
         def call(input_string, spinner = nil)
           spinner&.auto_spin
           result = PragmaticSegmenter::Segmenter.new(text: input_string, language: "ja").segment
-          spinner&.stop("Done")
+          spinner&.success("Done")
           result
         end
 
         def widget
-          ::TTY::Spinner.new("[:spinner] #{base_class_name} Processing ... ")
-        end
-
-        private
-
-        def base_class_name
-          self.class.name.split("::").last
+          ::TTY::Spinner.new("[:spinner] #{base_class_name} Processing ... ",
+                             success_mark: pastel.green("✔"))
         end
       end
     end
