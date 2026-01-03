@@ -12,7 +12,7 @@ module Rokujo
         # The default progress bar
         def widget_bar
           ::TTY::ProgressBar.new(
-            format("%-32s [:bar] [:elapsed]", pastel.cyan(base_class_name)),
+            format("%-40s [:bar] [:elapsed]", pastel.cyan(base_class_name)),
             head: pastel.green(">"),
             complete: pastel.green("=")
           )
@@ -22,7 +22,7 @@ module Rokujo
 
         # The name of the filter
         def base_class_name
-          self.class.name.split("Filters::").last
+          self.class.name.split("Extractor::").last
         end
 
         # An instance of Pastel.
