@@ -3,6 +3,7 @@
 
 require "rokujo/extractor"
 require "rokujo/extractor/formatters"
+require "rokujo/extractor/concerns/renderable"
 require "thor"
 require "json"
 require "ruby-spacy"
@@ -11,6 +12,8 @@ module Rokujo
   module Extractor
     # A simple CLI for Rokujo::Extractor
     class CLI < Thor
+      include Rokujo::Extractor::Concerns::Renderable
+
       attr_reader :errors
 
       def self.exit_on_failure? = true
@@ -38,14 +41,10 @@ module Rokujo
       def extract(*file_paths)
         show_help_and_exit if file_paths.empty?
 
-        spinner = if options[:progress]
-                    TTY::Spinner.new("[:spinner] Loading #{Rokujo::Extractor::Base::DEFAULT_SPACY_MODEL_NAME} ...",
-                                     format: :dots)
-                  end
-
-        spinner&.auto_spin
-        @model = Spacy::Language.new(Rokujo::Extractor::Base::DEFAULT_SPACY_MODEL_NAME)
-        spinner&.stop("Done")
+        self.widget_enable = options[:progress] ? true : false
+        @model = with_spinner do
+          Spacy::Language.new(Rokujo::Extractor::Base::DEFAULT_SPACY_MODEL_NAME)
+        end
 
         file_paths.each do |path|
           results = extract_sentences(path)
