@@ -56,6 +56,7 @@ module Rokujo
                                ::TTY::Spinner.new(
                                  message,
                                  **opts,
+                                 clear: true,
                                  output: widget_output
                                ))
           spinner.auto_spin
@@ -101,6 +102,7 @@ module Rokujo
                            ::TTY::ProgressBar.new(
                              message,
                              **opts,
+                             clear: true,
                              output: widget_output
                            ))
           result = yield(bar)
