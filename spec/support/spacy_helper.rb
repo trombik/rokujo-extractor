@@ -8,6 +8,6 @@ module SpacyHelper
 
   # keep model in class instance variable, avoiding global variable
   def self.spacy_model
-    @spacy_model ||= Spacy::Language.new(Rokujo::Extractor::Base::DEFAULT_SPACY_MODEL_NAME)
+    @spacy_model ||= Spacy::Language.new(Rokujo::Extractor::Parsers::Base::DEFAULT_SPACY_MODEL_NAME)
   end
 end

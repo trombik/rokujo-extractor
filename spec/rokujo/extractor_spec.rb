@@ -8,25 +8,25 @@ RSpec.describe Rokujo::Extractor do
   describe ".create" do
     context "when *.pdf is given" do
       it "returns PDF class" do
-        expect(described_class.create("/foo.pdf", model: model)).to be_a Rokujo::Extractor::PDF
+        expect(described_class.create("/foo.pdf", model: model)).to be_a Rokujo::Extractor::Parsers::PDF
       end
     end
 
     context "when *.txt is given" do
       it "returns Text class" do
-        expect(described_class.create("/foo.txt", model: model)).to be_a Rokujo::Extractor::Text
+        expect(described_class.create("/foo.txt", model: model)).to be_a Rokujo::Extractor::Parsers::Text
       end
     end
 
     context "when *.docx is given" do
       it "returns Docx class" do
-        expect(described_class.create("/foo.docx", model: model)).to be_a Rokujo::Extractor::Docx
+        expect(described_class.create("/foo.docx", model: model)).to be_a Rokujo::Extractor::Parsers::Docx
       end
     end
 
     context "when *.jsonl is given" do
       it "returns JSONL class" do
-        expect(described_class.create("/foo.jsonl", model: model)).to be_a Rokujo::Extractor::JSONL
+        expect(described_class.create("/foo.jsonl", model: model)).to be_a Rokujo::Extractor::Parsers::JSONL
       end
     end
 

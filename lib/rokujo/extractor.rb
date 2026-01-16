@@ -4,14 +4,10 @@ require "marcel"
 
 require_relative "extractor/version"
 require_relative "extractor/errors"
-require_relative "extractor/base"
-require_relative "extractor/text"
-require_relative "extractor/docx"
-require_relative "extractor/pdf"
-require_relative "extractor/jsonl"
 require_relative "extractor/filters"
 require_relative "extractor/pipeline"
 require_relative "extractor/metadata"
+require_relative "extractor/parsers"
 
 module Rokujo
   # A factory to extratc texts from files.
@@ -34,13 +30,13 @@ module Rokujo
     def self.extractor_by_extention(file_path, **opts)
       case File.extname(file_path).downcase
       when ".pdf"
-        PDF.new(file_path, **opts)
+        Parsers::PDF.new(file_path, **opts)
       when ".docx"
-        Docx.new(file_path, **opts)
+        Parsers::Docx.new(file_path, **opts)
       when ".txt"
-        Text.new(file_path, **opts)
+        Parsers::Text.new(file_path, **opts)
       when ".jsonl"
-        JSONL.new(file_path, **opts)
+        Parsers::JSONL.new(file_path, **opts)
       end
     end
 
@@ -48,17 +44,16 @@ module Rokujo
       # see /usr/local/etc/mime.types for available MIME types
       case Marcel::MimeType.for Pathname.new(file_path), name: Pathname.new(file_path).basename.to_s
       when "application/pdf"
-        PDF.new(file_path, **opts)
+        Parsers::PDF.new(file_path, **opts)
       when "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        Docx.new(file_path, **opts)
+        Parsers::Docx.new(file_path, **opts)
       when "text/plain"
-        Text.new(file_path, **opts)
+        Parsers::Text.new(file_path, **opts)
       end
     end
 
     private_class_method :extractor_by_mime, :extractor_by_extention
 
-    class Error < StandardError; end
-    class UnsupportedFileTypeError < Error; end
+    class UnsupportedFileTypeError < StandardError; end
   end
 end

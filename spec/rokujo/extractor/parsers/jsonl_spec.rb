@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Rokujo::Extractor::JSONL do
+RSpec.describe Rokujo::Extractor::Parsers::JSONL do
   let(:extractor) { described_class.new("/foo.jsonl", model: model, widget_enable: false) }
 
   before do

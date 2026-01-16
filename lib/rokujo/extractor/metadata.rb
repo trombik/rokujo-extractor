@@ -1,3 +1,7 @@
 # frozen_string_literal: true
 
-Dir[File.join(__dir__, "metadata/**/*.rb")].each { |file| require file }
+require_relative "metadata/base"
+require_relative "metadata/docx"
+require_relative "metadata/jsonl"
+require_relative "metadata/pdf"
+require_relative "metadata/text"

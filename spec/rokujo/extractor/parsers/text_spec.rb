@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Rokujo::Extractor::Text do
+RSpec.describe Rokujo::Extractor::Parsers::Text do
   let(:text) do
     <<~TEXT
       本文を、敬体（ですます調）あるいは常体（である調）のどちらかに統一する。

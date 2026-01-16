@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+require "pathname"
+require "uri"
+
+require_relative "base"
+
 module Rokujo
   module Extractor
     module Metadata

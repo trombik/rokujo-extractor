@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Rokujo::Extractor::Docx do
+RSpec.describe Rokujo::Extractor::Parsers::Docx do
   let(:extractor) { described_class.new("/foo.docx", model: model, widget_enable: false) }
   let(:doc) { instance_double(Docx::Document) }
   let(:paragraphs) do
