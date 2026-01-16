@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Rokujo::Extractor::Base do
+RSpec.describe Rokujo::Extractor::Parsers::Base do
   let(:extractor) { described_class.new("/foo", model: model, widget_enable: false) }
   let(:text) do
     <<~TEXT

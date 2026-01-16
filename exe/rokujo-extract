@@ -43,7 +43,7 @@ module Rokujo
 
         self.widget_enable = options[:progress] ? true : false
         @model = with_spinner do
-          Spacy::Language.new(Rokujo::Extractor::Base::DEFAULT_SPACY_MODEL_NAME)
+          Spacy::Language.new(Rokujo::Extractor::Parsers::Base::DEFAULT_SPACY_MODEL_NAME)
         end
 
         file_paths.each do |path|

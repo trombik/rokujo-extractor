@@ -4,6 +4,10 @@ require "uri"
 require "time"
 require "pathname"
 
+require_relative "base"
+require_relative "../errors"
+require_relative "../concerns"
+
 module Rokujo
   module Extractor
     module Metadata

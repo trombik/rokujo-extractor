@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Rokujo::Extractor::PDF do
+RSpec.describe Rokujo::Extractor::Parsers::PDF do
   let(:extractor) { described_class.new("/foo.pdf", model: model, widget_enable: false) }
   let(:reader) { instance_double(PDF::Reader) }
   let(:pages) { [instance_double(PDF::Reader::Page, text: text)] }

@@ -2,12 +2,14 @@
 
 require "json"
 
+require_relative "../concerns"
+require_relative "../errors"
+
 module Rokujo
   module Extractor
     module Metadata
       # The base class for Metadata.
       class Base
-        include Rokujo::Extractor::Errors
         include Rokujo::Extractor::Concerns::Identifiable
 
         attr_reader :opts, :location
@@ -45,33 +47,33 @@ module Rokujo
 
         # The title, e.g., the content of <title> tag in HTML.
         def title
-          raise NotImplementedError, "#{self.class} does not implement #{__method__}"
+          raise Rokujo::Extractor::Errors::NotImplementedError, "#{self.class} does not implement #{__method__}"
         end
 
         # The author of the resource. Not necessarily an individual, e.g., an
         # organization.
         def author
-          raise NotImplementedError, "#{self.class} does not implement #{__method__}"
+          raise Rokujo::Extractor::Errors::NotImplementedError, "#{self.class} does not implement #{__method__}"
         end
 
         # The URI of the resource.
         def uri
-          raise NotImplementedError, "#{self.class} does not implement #{__method__}"
+          raise Rokujo::Extractor::Errors::NotImplementedError, "#{self.class} does not implement #{__method__}"
         end
 
         # The ISO 8601 timestamp of when the resource was created.
         def created_at
-          raise NotImplementedError, "#{self.class} does not implement #{__method__}"
+          raise Rokujo::Extractor::Errors::NotImplementedError, "#{self.class} does not implement #{__method__}"
         end
 
         # The ISO 8601 timestamp of when the resource was updated.
         def updated_at
-          raise NotImplementedError, "#{self.class} does not implement #{__method__}"
+          raise Rokujo::Extractor::Errors::NotImplementedError, "#{self.class} does not implement #{__method__}"
         end
 
         # The ISO 8601 timestamp of when the resource was acquired.
         def acquired_at
-          raise NotImplementedError, "#{self.class} does not implement #{__method__}"
+          raise Rokujo::Extractor::Errors::NotImplementedError, "#{self.class} does not implement #{__method__}"
         end
 
         def uuid

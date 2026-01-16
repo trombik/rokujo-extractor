@@ -3,6 +3,9 @@
 require "nokogiri"
 require "docx"
 
+require_relative "base"
+require_relative "../concerns"
+
 module Rokujo
   module Extractor
     module Metadata
