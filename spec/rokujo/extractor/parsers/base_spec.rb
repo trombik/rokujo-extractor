@@ -43,7 +43,7 @@ RSpec.describe Rokujo::Extractor::Parsers::Base do
     end
 
     specify ":text has text" do
-      expect(extractor.extract_sentences.first[:text]).to eq text.split("\n").first
+      expect(extractor.extract_sentences.first[:text]).to eq text.unicode_normalize(:nfkc).split("\n").first
     end
 
     it "combines multiple lines into a single line" do

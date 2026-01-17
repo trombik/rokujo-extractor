@@ -22,7 +22,7 @@ RSpec.describe Rokujo::Extractor::Parsers::Text do
   describe "#extract_sentences" do
     it "extracts text in the file" do
       extracted_sentences = obj.extract_sentences.map { |element| element[:text] }
-      expect(extracted_sentences).to eq text.split("\n")
+      expect(extracted_sentences).to eq text.unicode_normalize(:nfkc).split("\n")
     end
 
     it "extracts correct number of sentences" do
