@@ -70,6 +70,7 @@ module Rokujo
             Filters::VerblessRejector.new(model: @nlp),
             Filters::BulletRemover.new,
             Filters::UrlRemover.new,
+            Filters::KeywordRemover.new,
             Filters::JapaneseSelector.new,
             Filters::ShortSentenceRejector.new,
             Filters::StringCleaner.new
