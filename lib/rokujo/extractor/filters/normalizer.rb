@@ -54,7 +54,7 @@ module Rokujo
           text.gsub(/\p{Extended_Pictographic}/, "")
               .unicode_normalize(:nfkc)
               # the following normalizations must be done after unicode_normalize.
-              # nomilize tilda and wave-dashes to 〜.
+              # normalize tilde and wave-dashes to 〜.
               .tr("~～〜", "〜〜〜")
               # smart quotes
               .tr("“”〝〟", '""""')
