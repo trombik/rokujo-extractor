@@ -8,6 +8,7 @@ require "rokujo/extractor/concerns/renderable"
 require "thor"
 require "json"
 require "ruby-spacy"
+require "tty/logger"
 
 module Rokujo
   module Extractor
@@ -49,7 +50,8 @@ module Rokujo
           Spacy::Language.new(Rokujo::Extractor::Parsers::Base::DEFAULT_SPACY_MODEL_NAME)
         end
 
-        file_paths.each do |path|
+        file_paths.each_with_index do |path, index|
+          logger.info "Processing #{path} (#{index + 1}/#{file_paths.count}) ..."
           results = extract_sentences(path)
           extract_show results
         end
@@ -118,6 +120,10 @@ module Rokujo
         def add_error(error)
           @errors ||= []
           @errors << error
+        end
+
+        def logger
+          @logger ||= TTY::Logger.new
         end
       end
       # rubocop:enable Metrics/BlockLength

@@ -51,6 +51,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "pragmatic_segmenter"
   spec.add_dependency "ruby-spacy"
   spec.add_dependency "thor"
+  spec.add_dependency "tty-logger"
   spec.add_dependency "tty-progressbar"
   spec.add_dependency "tty-spinner"
   spec.add_dependency "uuid7"
