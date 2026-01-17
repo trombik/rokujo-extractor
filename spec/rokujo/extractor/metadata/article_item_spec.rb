@@ -3,7 +3,7 @@
 require "spec_helper"
 
 RSpec.describe Rokujo::Extractor::Metadata::ArticleItem do
-  let(:metadata) { described_class.new(article.to_json) }
+  let(:metadata) { described_class.new(article.to_json, "dummy_uuid") }
   let(:extra_attributes) { metadata.extra_attributes }
   let(:article) do
     {

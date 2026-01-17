@@ -17,19 +17,28 @@ module Rokujo
             super
           end
 
+          # rubocop:disable Metrics/MethodLength
           def extract_sentences
             sentences = []
             file_content.with_index(1) do |line, index|
+              # as this is the beginning of new record, generate a UUID.
+              uuid = uuid_v7
+              # metadata is per-record, not per-file. generate metadata from
+              # JSON and its UUID.
+              extract_metadata(line, uuid)
               content = raw_text(line, index)
               results = pipeline.run(content).map.with_index do |sentence, index|
                 # XXX unlike JSONL, UUID is always per-record UUID because a
                 # record is a complete article.
-                sentence_to_h(sentence, index, uuid_v7)
+                sentence_to_h(sentence, index, uuid)
               end
-              sentences.concat results
+              # we have done with the record. reset the metadata.
+              @metadata = nil
+              sentences.concat(results)
             end
             sentences
           end
+          # rubocop:enable Metrics/MethodLength
 
           def raw_text(line, index)
             xml_string = JSON.parse(line)["body"]
@@ -69,6 +78,16 @@ module Rokujo
           def append_period_if_missing_at_the_end(text)
             text << "。" unless text[-1] =~ /[。?？!！]/
             text
+          end
+
+          def metadata
+            raise "BUG: metadata method of #{self} called before extract_metadata()" unless @metadata
+
+            @metadata
+          end
+
+          def extract_metadata(json_string, uuid)
+            @metadata = Rokujo::Extractor::Metadata::ArticleItem.new(json_string, uuid)
           end
         end
       end

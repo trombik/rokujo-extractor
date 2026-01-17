@@ -11,10 +11,11 @@ module Rokujo
       class ArticleItem < Base
         attr_reader :json
 
-        def initialize(json_string, opts = {})
+        def initialize(json_string, uuid, opts = {})
           # as the metadata comes from json_string, pass an empty string for
           # location.
           super("", opts)
+          @uuid = uuid
           @json = JSON.parse(json_string)
         end
 
@@ -46,7 +47,8 @@ module Rokujo
           {
             description: json["description"],
             site_name: json["site_name"],
-            kind: json["kind"]
+            kind: json["kind"],
+            uuid: @uuid
           }
         end
       end
