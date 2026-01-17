@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require "rokujo/extractor/parsers"
 require "rokujo/extractor"
 require "rokujo/extractor/formatters"
 require "rokujo/extractor/concerns/renderable"
@@ -34,6 +35,8 @@ module Rokujo
       method_option :uuid, type: :string, default: "file", enum: %w[file record],
                            desc: "Generate UUID per record or per file (.jsonl file only)"
       method_option :progress, type: :boolean, default: true, desc: "Show progress."
+      method_option :parser, type: :string, default: nil, enum: %w[docx pdf text jsonl article_item],
+                             desc: "Parser to parse the files"
       default_task :extract
 
       # rubocop:disable Metrics/MethodLength
@@ -61,11 +64,32 @@ module Rokujo
       # The block is for non-command methods
       no_commands do
         def extract_sentences(path)
-          extractor = Rokujo::Extractor.create(path,
-                                               model: @model,
-                                               metadata: { source: File.basename(path) },
-                                               uuid: options[:uuid],
-                                               widget_enable: options[:progress])
+          opts = {
+            model: @model,
+            metadata: { source: File.basename(path) },
+            uuid: options[:uuid],
+            widget_enable: options[:progress]
+          }
+          extractor_class = case options[:parser]
+                            when "docx"
+                              Rokujo::Extractor::Parsers::Docx
+                            when "pdf"
+                              Rokujo::Extractor::Parsers::PDF
+                            when "jsonl"
+                              Rokujo::Extractor::Parsers::JSONL
+                            when "article_item"
+                              Rokujo::Extractor::Parsers::JSONL::ArticleItem
+                            when nil
+                              nil
+                            else
+                              raise "Unknown parser: #{options[:parser]}" \
+                                    "Supported parsers: docx, pdf, jsonl, article_item\n"
+                            end
+          if extractor_class
+            extractor = extractor_class.new(path, **opts)
+          else
+            extractor = Rokujo::Extractor.create(path, **opts)
+          end
           extractor.extract_sentences
         rescue StandardError => e
           add_error "Error processing #{path}: #{e.class}\n#{e.message}\n#{e.backtrace.join("\n")}"
