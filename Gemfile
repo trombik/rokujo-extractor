@@ -15,3 +15,5 @@ gem "rubocop", "~> 1.21"
 gem "rubocop-rspec", "~> 3.8"
 
 gem "terminal-table", "~> 3.0"
+
+gem "pry", "~> 0.16.0"
