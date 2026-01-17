@@ -21,9 +21,10 @@ module Rokujo
             sentences = []
             file_content.with_index(1) do |line, index|
               content = raw_text(line, index)
-              uuid = uuid_v7 # per record UUID
               results = pipeline.run(content).map.with_index do |sentence, index|
-                sentence_to_h(sentence, index, opts[:uuid] == :file ? metadata.uuid : uuid)
+                # XXX unlike JSONL, UUID is always per-record UUID because a
+                # record is a complete article.
+                sentence_to_h(sentence, index, uuid_v7)
               end
               sentences.concat results
             end
@@ -42,6 +43,8 @@ module Rokujo
 
           def process_xml(doc)
             result = doc.at_xpath("./main").children.map do |node|
+              # if the node is a TEXT node, additional processing is required.
+              # otherwise, just dump the node.text.
               node.text? ? map_text_node_to_nil_or_string(node) : node.text
             end
             result.flatten.compact
