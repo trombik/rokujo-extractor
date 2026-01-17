@@ -51,18 +51,16 @@ module Rokujo
           MAP_ENCLOSED_ALPHANUMERICS.each do |from, to|
             text.gsub!(from, to)
           end
-          text.unicode_normalize!(:nfkc)
-          # the following normalizations must be done after unicode_normalize.
-
-          # nomilize tilda and wave-dashes to 〜.
-          text.tr!("~～〜", "〜〜〜")
-          # smart quotes
-          text.tr!("“”〝〟", '""""')
-          text.tr!("‘’`´", "''''")
-
-          # braces
-          text.tr!("【】［］〔〕《》〈〉", "[][][][][]")
-          text
+          text.gsub(/\p{Extended_Pictographic}/, "")
+              .unicode_normalize(:nfkc)
+              # the following normalizations must be done after unicode_normalize.
+              # nomilize tilda and wave-dashes to 〜.
+              .tr("~～〜", "〜〜〜")
+              # smart quotes
+              .tr("“”〝〟", '""""')
+              .tr("‘’`´", "''''")
+              # braces
+              .tr("【】［］〔〕《》〈〉", "[][][][][]")
         end
       end
     end
