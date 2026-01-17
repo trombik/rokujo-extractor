@@ -3,6 +3,7 @@
 require "docx"
 require_relative "base"
 require_relative "../metadata"
+require_relative "../errors"
 
 module Rokujo
   module Extractor
@@ -15,7 +16,7 @@ module Rokujo
           doc = ::Docx::Document.open(@file_path)
           doc.paragraphs.map(&:text).join("\n")
         rescue StandardError => e
-          raise Error, "failed to read #{@file_path}: #{e.message}"
+          raise e, "failed to read #{@file_path}: #{e.message}"
         end
 
         def extract_metadata
