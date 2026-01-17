@@ -64,6 +64,7 @@ module Rokujo
 
         def pipeline_filters
           [
+            Filters::Normalizer.new,
             Filters::LineReconstructor.new,
             Filters::Segmenter.new,
             Filters::VerblessRejector.new(model: @nlp),

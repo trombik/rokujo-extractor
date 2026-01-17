@@ -25,7 +25,7 @@ RSpec.describe Rokujo::Extractor::Parsers::PDF do
   it "runs pdftotext and returns the extracted texts" do
     extracted_sentences = extractor.extract_sentences.map { |s| s[:text] }
 
-    expect(extracted_sentences).to eq text.split("\n")
+    expect(extracted_sentences).to eq text.unicode_normalize(:nfkc).split("\n")
   end
 
   it "raises an error with file path in the message" do
