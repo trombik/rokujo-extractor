@@ -54,5 +54,12 @@ RSpec.describe Rokujo::Extractor::Filters::Normalizer do
         expect(filter.call(input)).to eq "[1][最新]〜11月のニュース〜"
       end
     end
+
+    context "with Emojis" do
+      it "removes all icons including ⚡ using Extended_Pictographic" do
+        input = "News ⚡: Launch 🚀 at 10:00"
+        expect(filter.call(input)).to eq "News : Launch  at 10:00"
+      end
+    end
   end
 end
