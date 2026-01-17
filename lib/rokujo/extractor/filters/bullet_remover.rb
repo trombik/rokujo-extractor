@@ -27,8 +27,6 @@ module Rokujo
 
         private
 
-        # rubocop:disable Metrics/MethodLength, Lint/DuplicateRegexpCharacterClassElement
-        #
         # the method returns a complicated regexp and some elements are
         # intentionally duplicated.
         def bullet_pattern
@@ -47,20 +45,11 @@ module Rokujo
            \d+(?:\.\d+){2,} |
            \p{Pd}\s | # dashes with a trailing space
            \p{No} | # other numbers, such as U+2460, or circled numbers
-           [
-             \u00B7
-             \u0387
-             \u2022
-             \u2219
-             \u22C5
-             \u30FB
-             \uFF65
-           ] | # various middle dots
+           [\u00B7\u0387\u2022\u2219\u22C5\u30FB\uFF65] | # various middle dots
            [●✕◯※*] # other common bullets used in Japanse texts
           )
           /x
         end
-        # rubocop:enable Metrics/MethodLength, Lint/DuplicateRegexpCharacterClassElement
       end
     end
   end
