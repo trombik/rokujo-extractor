@@ -13,7 +13,7 @@ module Rokujo
           self.widget_enable = widget_enable
           with_progress(total: sentences.count * 512) do |bar|
             sentences.map do |sentence|
-              result = sentence.gsub(NBSP, "")
+              result = sentence.gsub(NBSP, " ")
                                .gsub(INVISIBLE_CHARS_RE, "")
                                .strip
               bar.advance(512)
