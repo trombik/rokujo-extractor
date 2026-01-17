@@ -24,14 +24,11 @@ RSpec.describe Rokujo::Extractor::Parsers::JSONL::ArticleItem do
           "
       }.to_json
     ].to_enum
-    metadata = instance_double(Rokujo::Extractor::Metadata::JSONL)
     allow(extractor).to receive_messages(
       # retrun enum, which responds to `#with_index` called in
       # `#extracted_sentences`.
-      file_content: enum,
-      extract_metadata: metadata
+      file_content: enum
     )
-    allow(metadata).to receive(:uuid).and_return("file_uuid")
   end
 
   describe "#extract_sentences" do
@@ -64,6 +61,21 @@ RSpec.describe Rokujo::Extractor::Parsers::JSONL::ArticleItem do
 
     it "rejects short sentence in <p> tags" do
       expect(texts).not_to include("本文です。")
+    end
+
+    it "tags every sentence with a unique ID" do
+      sentences = extractor.extract_sentences
+      uuids = sentences.map { |el| el[:meta][:uuid] }.uniq
+      expect(uuids.count).to eq 1
+    end
+
+    specify "all the UUIDs are in a valid UUIDv7 format" do
+      t = /[0-9a-zA-Z]/
+      r = t
+      sentences = extractor.extract_sentences
+      uuids = sentences.map { |el| el[:meta][:uuid] }.uniq
+      # 019bcb1b-4e27-7230-8202-67c2b914e482
+      expect(uuids).to all(match(/\A#{t}{8}-#{t}{4}-7#{r}{3}-#{r}{4}-#{r}{12}\z/))
     end
   end
 end
