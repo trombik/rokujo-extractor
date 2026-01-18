@@ -53,25 +53,21 @@ module Rokujo
 
         # Extracts sentences from the JSONL file.
         #
-        # Processes each line through the sentence processing pipeline and collects
-        # the results with associated metadata.
-        #
-        # @return [Array<Hash>] Array of sentence hashes, each containing:
+        # @yield [Hash] Sentence hash containing:
         #   - :text [String] The extracted sentence text
         #   - :meta [Hash] Metadata including line number and UUID
+        # @yieldparam sentence [Hash] Sentence hash with :text and :meta keys
+        # @return [Enumerator] if no block is given
         def extract_sentences
-          sentences = []
+          return to_enum(:extract_sentences) unless block_given?
+
           file_content.with_index(1) do |line, index|
             content = raw_text(line, index)
-            # return [] if content.nil? || content.empty?
-
-            uuid = uuid_v7 # per record UUID
-            results = pipeline.run(content).map.with_index do |sentence, index|
-              sentence_to_h(sentence, index, opts[:uuid] == :file ? metadata.uuid : uuid)
+            uuid = (opts[:uuid] == :file) ? metadata.uuid : uuid_v7
+            pipeline.run(content).each_with_index do |sentence, idx|
+              yield sentence_to_h(sentence, idx, uuid)
             end
-            sentences.concat results
           end
-          sentences
         end
 
         # Creates the sentence processing pipeline.
