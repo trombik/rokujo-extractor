@@ -32,29 +32,30 @@ module Rokujo
         # @param bar [TTY::ProgressBar] Otional progress bar.
         # @return [String]
         #
-        # rubocop:disable Metrics/MethodLength
-        def call(raw_text, widget_enable: true)
+        def call(input, widget_enable: true)
           self.widget_enable = widget_enable
           # create an array so that we can tell how many steps we are going to
           # proceed to the progress bar.
-          lines = strip_with_newline(raw_text)
-
-          # set total size of the operations. multiply by 512 so that the bar
-          # width always fits to the full console width.
-          with_progress(total: lines.count * 512) do |bar|
-            reconstructed = String.new
-            lines.each_with_index do |line, i|
-              reconstructed << line
-              reconstructed << "\n" if should_break_after?(line, lines[i + 1])
-              bar&.advance(512)
-            end
-            bar&.finish
-            reconstructed
+          items = input.is_a?(String) ? input.lines : input
+          with_progress(total: items.size) do |bar|
+            reconstruct(items) { bar&.advance(1) }
           end
         end
-        # rubocop:enable Metrics/MethodLength
 
         private
+
+        def reconstruct(items)
+          buffer = []
+          items.each_with_index.with_object([]) do |(line, i), result|
+            buffer << line.strip
+            yield if block_given?
+
+            if should_break_after?(line, items[i + 1])
+              result << buffer.join
+              buffer.clear
+            end
+          end
+        end
 
         # Returns Array of line, striped, empty lines removed.
         def strip_with_newline(raw_text)

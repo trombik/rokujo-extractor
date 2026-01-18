@@ -28,23 +28,18 @@ module Rokujo
 
         }.freeze
 
-        # rubocop:disable Metrics/MethodLength
-        def call(raw_text, widget_enable: true)
+        def call(input, widget_enable: true)
           self.widget_enable = widget_enable
-          # create an array so that we can tell how many steps we are going to
-          # proceed to the progress bar.
-          lines = raw_text.lines
-          with_progress(total: lines.count * 512) do |bar|
-            normalized = lines.map do |line|
-              result = normalize(line)
-              bar&.advance(512)
-              result
+          items = input.is_a?(String) ? [input] : input
+
+          with_progress(total: items.respond_to?(:size) ? items.size : nil) do |bar|
+            items.map do |item|
+              res = normalize(item.dup)
+              bar&.advance(1)
+              res
             end
-            bar.finish
-            normalized.join
           end
         end
-        # rubocop:enable Metrics/MethodLength
 
         def normalize(text)
           text.tr!(TR_ENCLOSED_ALPHANUMERICS.first, TR_ENCLOSED_ALPHANUMERICS.last)
