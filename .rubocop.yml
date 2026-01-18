@@ -45,6 +45,9 @@ RSpec/ExampleLength:
     - array
     - hash
     - heredoc
+RSpec/NestedGroups:
+  # accept one more depth for contexts in spec files.
+  Max: 4
 Metrics/MethodLength:
   CountAsOne:
     - array
