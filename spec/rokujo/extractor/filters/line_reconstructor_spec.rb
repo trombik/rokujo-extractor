@@ -14,12 +14,8 @@ RSpec.describe Rokujo::Extractor::Filters::LineReconstructor do
   let(:filter) { described_class.new }
 
   describe "#call" do
-    it "returns String" do
-      expect(filter.call(input_string)).to be_a String
-    end
-
     it "reconstructs sentences that spans to multiple lines" do
-      expect(filter.call(input_string).split("\n")).to eq [
+      expect(filter.call(input_string)).to eq [
         "これはテストの一行目の続きです。",
         "タイトル",
         "これは一行になった二行目です。",

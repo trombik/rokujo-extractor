@@ -19,10 +19,15 @@ module Rokujo
         # @param input_string [String] The text string to analyze.
         # @return [Array<String>] Array of segmented sentences.
         # @param spinner [TTY::Spinner] Otional spinner
-        def call(input_string, widget_enable: true)
+        def call(input, widget_enable: true)
           self.widget_enable = widget_enable
+          items = Array(input)
+
           with_spinner do |spinner|
-            result = PragmaticSegmenter::Segmenter.new(text: input_string, language: "ja").segment
+            # use flat_map as PragmaticSegmenter::Segmenter returns an Array.
+            result = items.flat_map do |text|
+              PragmaticSegmenter::Segmenter.new(text: text, language: "ja").segment
+            end
             spinner&.success("Done")
             result
           end

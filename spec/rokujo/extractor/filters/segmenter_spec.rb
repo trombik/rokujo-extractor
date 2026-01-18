@@ -12,11 +12,11 @@ RSpec.describe Rokujo::Extractor::Filters::Segmenter do
 
   describe "#call" do
     it "returns an Array of segemnts" do
-      expect(filter.call(text)).to be_an Array
-    end
-
-    specify "the eleemnts are a String" do
-      expect(filter.call(text)).to all(be_a String)
+      expect(filter.call(text)).to eq %w[
+        こんにちは、世界。
+        セグメンターは、文章から文を抜き出します。
+        出力は配列です。
+      ]
     end
   end
 end

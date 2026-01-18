@@ -63,7 +63,7 @@ module Rokujo
 
           file_content.with_index(1) do |line, index|
             content = raw_text(line, index)
-            uuid = (opts[:uuid] == :file) ? metadata.uuid : uuid_v7
+            uuid = opts[:uuid] == :file ? metadata.uuid : uuid_v7
             pipeline.run(content).each_with_index do |sentence, idx|
               yield sentence_to_h(sentence, idx, uuid)
             end
