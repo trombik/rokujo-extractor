@@ -17,6 +17,9 @@ module Rokujo
         # @param model [Object] A language model created with Spacy::Language.new.
         #                       The default model is DEFAULT_SPACY_MODEL_NAME
         def initialize(model: nil)
+          # request the GC to start before creating a new instance of Spacy
+          # model. this resovles a possible deadlock.
+          GC.start
           @nlp = model || Spacy::Language.new(DEFAULT_SPACY_MODEL_NAME)
           super()
         end
