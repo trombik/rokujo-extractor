@@ -30,16 +30,13 @@ RSpec.describe Rokujo::Extractor::Metadata::Base do
   describe "CORE_ATTRIBUTES_ABSTRACTED" do
     # rubocop:disable RSpec/ExampleLength
     specify "all the methods in it raise not_implemented_error" do
-      failed_to_raise_not_implemented_error = Class.new(StandardError).new
-
-      expect do
-        ABSTARCT_ATTRIBUTES.each do |attr|
+      expect(
+        Rokujo::Extractor::Metadata::Base::ABSTARCT_ATTRIBUTES.map do |attr|
           metadata.send(attr)
-          raise failed_to_raise_not_implemented_error
-        rescue not_implemented_error
-          # ignore because NotImplementedError is expected
+        rescue Rokujo::Extractor::Errors::NotImplementedError => e
+          e
         end
-      end.not_to raise_error(failed_to_raise_not_implemented_error)
+      ).to all(be_a Rokujo::Extractor::Errors::NotImplementedError)
     end
     # rubocop:enable RSpec/ExampleLength
   end
