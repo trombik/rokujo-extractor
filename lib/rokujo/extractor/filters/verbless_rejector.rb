@@ -13,6 +13,7 @@ module Rokujo
         DEFAULT_SPACY_MODEL_NAME = "ja_ginza"
         DEFAULT_NCPU = Etc.nprocessors # number of physical processors exceluding HT
         DEFAULT_CHUNK_SIZE = 50
+        PLATFORM_DOES_NOT_SUPPORTS_FORK = Etc.uname[:sysname] =~ /Windows|MSYS|MINGW/ ? true : false
 
         # @param model [Object] A language model created with Spacy::Language.new.
         #                       The default model is DEFAULT_SPACY_MODEL_NAME
@@ -27,10 +28,11 @@ module Rokujo
         # @param sentences [Array<String>]
         # @return [Array<String>] Array of filtered sentences.
         def call(sentences, widget_enable: true, ncpu: DEFAULT_NCPU, chunk_size: DEFAULT_CHUNK_SIZE)
-          if ncpu > 1
-            call_parallel(sentences, widget_enable: widget_enable, ncpu: ncpu, chunk_size: chunk_size)
-          else
+          # disable parallelism when the patform does not support fork
+          if ncpu <= 1 || PLATFORM_DOES_NOT_SUPPORTS_FORK
             call_iterator(sentences, widget_enable: widget_enable)
+          else
+            call_parallel(sentences, widget_enable: widget_enable, ncpu: ncpu, chunk_size: chunk_size)
           end
         end
 
