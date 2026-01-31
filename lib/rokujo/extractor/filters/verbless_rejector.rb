@@ -40,7 +40,7 @@ module Rokujo
 
         # Parallel version. process chunks of sentences with ncpu cores
         def call_parallel(sentences, widget_enable:, ncpu:, chunk_size:)
-          progress = widget_enable ? "VerblessRejector" : nil
+          progress = widget_enable ? { title: "VerblessRejector", output: $stderr } : nil
           Parallel.map(sentences.each_slice(chunk_size), progress: progress, in_processes: ncpu) do |chunk|
             chunk.select do |sentence|
               sentence_include_predicate?(sentence)
