@@ -45,7 +45,7 @@ RSpec.describe Rokujo::Extractor::Filters::VerblessRejector do
           chunk_size: chunk_size,
           widget_enable: false
         }
-        ordered_sentences = (1..(chunk_size * ncpu * 5)).map { |n| "#{n} - 述語のある文です" }
+        ordered_sentences = (1..(chunk_size * ncpu * 5)).map { |n| "#{n} - { '名詞' * rand(100) } 述語のある文です" }
 
         expect(filter.call(ordered_sentences, **opts)).to match_array(ordered_sentences)
       end
