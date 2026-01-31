@@ -5,6 +5,18 @@ document layouts and clean Japanese text analysis. It supports PDF, Docx, and
 Text files, focusing on reconstructing sentences that have been fragmented by
 hard line breaks.
 
+<!-- vim-markdown-toc GFM -->
+
+* [Installation](#installation)
+* [Usage](#usage)
+* [Known issues](#known-issues)
+    * [On default Windows, parallelism has no effects](#on-default-windows-parallelism-has-no-effects)
+* [Development](#development)
+* [Contributing](#contributing)
+* [License](#license)
+
+<!-- vim-markdown-toc -->
+
 ## Installation
 
 Add the following to `Gemfile`.
@@ -16,6 +28,15 @@ gem "rokujo-extractor", git: "https://github.com/trombik/rokujo-extractor.git", 
 ## Usage
 
 TBW
+
+## Known issues
+
+### On default Windows, parallelism has no effects
+
+Because [parallel](https://github.com/grosser/parallel) gem does not support
+Windows (or more specifically, Windows does not support `fork()`).
+
+Running on WSL2 (Windows Subsystem for Linux 2) workarounds the issue.
 
 ## Development
 
