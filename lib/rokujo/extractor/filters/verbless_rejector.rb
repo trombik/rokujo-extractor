@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require "ruby-spacy"
+require "parallel"
+require "etc"
 
 module Rokujo
   module Extractor
@@ -9,6 +11,8 @@ module Rokujo
       class VerblessRejector < Base
         # The default model name
         DEFAULT_SPACY_MODEL_NAME = "ja_ginza"
+        DEFAULT_NCPU = Etc.nprocessors # number of physical processors exceluding HT
+        DEFAULT_CHUNK_SIZE = 50
 
         # @param model [Object] A language model created with Spacy::Language.new.
         #                       The default model is DEFAULT_SPACY_MODEL_NAME
@@ -19,7 +23,28 @@ module Rokujo
 
         # @param sentences [Array<String>]
         # @return [Array<String>] Array of filtered sentences.
-        def call(sentences, widget_enable: true)
+        def call(sentences, widget_enable: true, ncpu: DEFAULT_NCPU, chunk_size: DEFAULT_CHUNK_SIZE)
+          if ncpu > 1
+            call_parallel(sentences, widget_enable: widget_enable, ncpu: ncpu, chunk_size: chunk_size)
+          else
+            call_iterator(sentences, widget_enable: widget_enable)
+          end
+        end
+
+        private
+
+        # Parallel version. process chunks of sentences with ncpu cores
+        def call_parallel(sentences, widget_enable:, ncpu:, chunk_size:)
+          progress = widget_enable ? "VerblessRejector" : nil
+          Parallel.map(sentences.each_slice(chunk_size), progress: progress, in_processes: ncpu) do |chunk|
+            chunk.select do |sentence|
+              sentence_include_predicate?(sentence)
+            end
+          end.flatten
+        end
+
+        # Iterator version. Does not store all the sentences in memory.
+        def call_iterator(sentences, widget_enable:)
           self.widget_enable = widget_enable
           with_progress(total: sentences.count * 512) do |bar|
             selected = sentences.select do |sentence|
@@ -31,8 +56,6 @@ module Rokujo
             selected
           end
         end
-
-        private
 
         def sentence_include_predicate?(sentence)
           doc = @nlp.read(sentence)

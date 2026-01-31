@@ -13,7 +13,7 @@ RSpec.describe Rokujo::Extractor::Filters::VerblessRejector do
         ロードと解析
         昨日の干場
       ]
-      expect(filter.call(without_verb)).to eq []
+      expect(filter.call(without_verb, widget_enable: false)).to eq []
     end
 
     it "selects sentences with verb or predicate" do
@@ -33,7 +33,22 @@ RSpec.describe Rokujo::Extractor::Filters::VerblessRejector do
         実行について
       ]
 
-      expect(filter.call(with_predicate)).to match_array(with_predicate)
+      expect(filter.call(with_predicate, widget_enable: false)).to match_array(with_predicate)
+    end
+
+    context "when parallelism is enabled" do
+      it "returns the result in the order" do
+        ncpu = 4
+        chunk_size = 10
+        opts = {
+          ncpu: ncpu,
+          chunk_size: chunk_size,
+          widget_enable: false
+        }
+        ordered_sentences = (1..(chunk_size * ncpu * 5)).map { |n| "#{n} - 述語のある文です" }
+
+        expect(filter.call(ordered_sentences, **opts)).to match_array(ordered_sentences)
+      end
     end
   end
 end
