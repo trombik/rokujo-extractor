@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     rokujo-extractor (0.1.0)
-      cld2-small
+      cld3
       csv
       docx
       fiddle
@@ -25,8 +25,7 @@ GEM
     afm (1.0.0)
     ast (2.4.3)
     bigdecimal (3.3.1)
-    cld2-small (2.0.5)
-      ffi (~> 1.17.1)
+    cld3 (3.7.0)
     coderay (1.1.3)
     csv (3.3.5)
     date (3.5.1)
@@ -44,7 +43,6 @@ GEM
       multipart-post (~> 2.0)
     faraday-net_http (3.4.2)
       net-http (~> 0.5)
-    ffi (1.17.3)
     fiddle (1.1.8)
     hashery (2.1.2)
     io-console (0.8.1)

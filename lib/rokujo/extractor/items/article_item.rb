@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "cld"
+require "cld3"
 require "pathname"
 require "time"
 require "uri"
@@ -40,7 +40,8 @@ module Rokujo
 
         # @return [String] Two-letter language code og the body
         def lang
-          CLD.detect_language(body[0, 200])[:code]
+          cld3 = CLD3::NNetLanguageIdentifier.new(0, 1000)
+          cld3.find_language(body[0, 200]).language.to_s
         end
 
         def to_h
