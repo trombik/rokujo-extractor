@@ -54,7 +54,7 @@ module Rokujo
 
         # source
         def source
-          {
+          @source ||= {
             title: info[:SourceTitle],
             url: info[:SourceURL],
             site_name: info[:SourceSiteName],
@@ -65,7 +65,7 @@ module Rokujo
         private
 
         def info
-          doc.info
+          @info ||= doc.info
         end
 
         def doc

@@ -27,7 +27,6 @@ RSpec.describe Rokujo::Extractor::Items::PdfItem do
     allow(path).to receive_messages(realpath: "/foo-hash.pdf", basename: "foo-hash.pdf")
     item = described_class.new("/foo-hash.pdf")
     item.location = path
-    item.source = {}
     item.body = "こんにちは"
     item.instance_variable_set(:@doc, doc)
     item

@@ -35,17 +35,21 @@ module Rokujo
 
         # @return [Integer] Character length without space
         def character_count
-          body.gsub(/\p{Space}/, "").size
+          @character_count ||= body.gsub(/\p{Space}/, "").size
         end
 
         # @return [String] Two-letter language code og the body
         def lang
-          cld3 = CLD3::NNetLanguageIdentifier.new(0, 1000)
-          cld3.find_language(body[0, 200]).language.to_s
+          return @lang if @lang
+
+          @cld3 ||= CLD3::NNetLanguageIdentifier.new(0, 1000)
+          @lang = @cld3.find_language(body[0, 20]).language.to_s
         end
 
         def to_h
-          {
+          return @hash if @hash
+
+          @to_h ||= {
             acquired_time: acquired_time,
             author: author,
             body: body,
