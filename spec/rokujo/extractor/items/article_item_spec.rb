@@ -5,7 +5,7 @@ RSpec.describe Rokujo::Extractor::Items::ArticleItem do
     item = described_class.new("/foo.txt")
     item.acquired_time = Time.now.iso8601
     item.author = "Me"
-    item.body = "foo"
+    item.body = [{ text: "foo" }]
     item.description = "desc"
     item.kind = "article"
     item.modified_time = Time.now.iso8601
@@ -35,25 +35,25 @@ RSpec.describe Rokujo::Extractor::Items::ArticleItem do
 
   describe "#body" do
     it "is a reader accessor" do
-      expect(item.body).to eq "foo"
+      expect(item.body.first[:text]).to eq "foo"
     end
 
     it "is a writer accessor" do
-      item.body = "bar"
-      expect(item.body).to eq "bar"
+      item.body = [{ text: "bar" }]
+      expect(item.body.first[:text]).to eq "bar"
     end
   end
 
   describe "#character_count" do
     it "returns character length without space" do
-      item.body = "foo\u3000bar\n"
+      item.body = [{ text: "foo\u3000" }, { text: "bar\n" }]
       expect(item.character_count).to eq 6
     end
   end
 
   describe "#lang" do
     it "auto-detects the language in the body" do
-      item.body = "こんにちは"
+      item.body = [{ text: "こんにちは" }]
       expect(item.lang).to eq "ja"
     end
   end
