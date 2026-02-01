@@ -1,3 +1,4 @@
+---
 name: Ruby
 
 on:
@@ -58,6 +59,11 @@ jobs:
           bundler-cache: true
           cargo-cache: true
           bundler: latest
+        env:
+          # enable rb_sys_stable_api_compiled_fallback on head to resolve an
+          # error while building: Failed to setup stable API: Stable API is
+          # needed but could not find a candidate.
+          RB_SYS_STABLE_API_COMPILED_FALLBACK: ${{ matrix.ruby == 'head' && true || '' }}
 
       - name: Run the default task
         run: bundle exec rake
