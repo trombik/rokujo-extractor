@@ -47,6 +47,9 @@ module Rokujo
             text.gsub!(from, to)
           end
           text.gsub(/\p{Extended_Pictographic}/, "")
+              .gsub("\n", "")
+              .gsub("\r", "")
+              .gsub(/\s+/, " ")
               .unicode_normalize(:nfkc)
               # the following normalizations must be done after unicode_normalize.
               # normalize tilde and wave-dashes to 〜.

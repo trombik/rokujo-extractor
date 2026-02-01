@@ -6,6 +6,21 @@ RSpec.describe Rokujo::Extractor::Filters::Normalizer do
   describe "#call" do
     let(:filter) { described_class.new }
 
+    it "replaces multiple spaces with a space" do
+      input = "foo    bar"
+      expect(filter.call(input)).to eq ["foo bar"]
+    end
+
+    it "removes \\n" do
+      input = "\nfoo\n\n"
+      expect(filter.call(input)).to eq ["foo"]
+    end
+
+    it "removes \\r\\n" do
+      input = "\r\nfoo\r\n\r\n"
+      expect(filter.call(input)).to eq ["foo"]
+    end
+
     context "with Enclosed Alphanumerics (U+2460-24FF)" do
       it "converts single-digit enclosed numbers to half-width" do
         expect(filter.call("①❶⑴⒈")).to eq ["11(1)1."]
@@ -58,7 +73,7 @@ RSpec.describe Rokujo::Extractor::Filters::Normalizer do
     context "with Emojis" do
       it "removes all icons including ⚡ using Extended_Pictographic" do
         input = "News ⚡: Launch 🚀 at 10:00"
-        expect(filter.call(input)).to eq ["News : Launch  at 10:00"]
+        expect(filter.call(input)).to eq ["News : Launch at 10:00"]
       end
     end
   end
