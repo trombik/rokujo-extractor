@@ -8,6 +8,8 @@ module Rokujo
         # Zero Width Spaces and BOM
         INVISIBLE_CHARS_RE = /[\u200B-\u200D\uFEFF]/
         NBSP = "\u00A0"
+        # Private Use Area
+        PUA_RE = /[\uE000-\uF8FF]/
 
         def call(sentences, widget_enable: true)
           self.widget_enable = widget_enable
@@ -15,6 +17,7 @@ module Rokujo
             sentences.map do |sentence|
               result = sentence.gsub(NBSP, " ")
                                .gsub(INVISIBLE_CHARS_RE, "")
+                               .gsub(PUA_RE, "")
                                .strip
               bar.advance(512)
               result
