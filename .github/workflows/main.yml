@@ -53,17 +53,11 @@ jobs:
         run: python -m spacy download ja_core_news_sm
 
       - name: Set up Ruby and Rust
-        uses: oxidize-rb/actions/setup-ruby-and-rust@v1
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-          cargo-cache: true
           bundler: latest
-        env:
-          # enable rb_sys_stable_api_compiled_fallback on head to resolve an
-          # error while building: Failed to setup stable API: Stable API is
-          # needed but could not find a candidate.
-          RB_SYS_STABLE_API_COMPILED_FALLBACK: ${{ matrix.ruby == 'head' && true || '' }}
 
       - name: Run the default task
         run: bundle exec rake

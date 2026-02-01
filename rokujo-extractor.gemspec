@@ -43,10 +43,9 @@ Gem::Specification.new do |spec|
   # Workaround a missing dependency in pycall. fiddle used to be loaded from
   # the standard library, but is not part of the default gems since Ruby
   # 4.0.0.
+  spec.add_dependency "cld2-small"
   spec.add_dependency "csv"
   spec.add_dependency "fiddle"
-  spec.add_dependency "iso-639"
-  spec.add_dependency "lingua_rb"
   spec.add_dependency "marcel"
   spec.add_dependency "parallel"
   spec.add_dependency "pastel"
