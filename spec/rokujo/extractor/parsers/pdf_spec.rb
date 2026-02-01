@@ -2,8 +2,6 @@
 
 RSpec.describe Rokujo::Extractor::Parsers::PDF do
   let(:extractor) { described_class.new("/foo.pdf", model: model, widget_enable: false) }
-  let(:reader) { instance_double(PDF::Reader) }
-  let(:pages) { [instance_double(PDF::Reader::Page, text: text)] }
   let(:text) do
     <<~TEXT
       本文を、敬体（ですます調）あるいは常体（である調）のどちらかに統一する。
@@ -13,6 +11,8 @@ RSpec.describe Rokujo::Extractor::Parsers::PDF do
   let(:metadata) { instance_double(Rokujo::Extractor::Metadata::Base) }
 
   before do
+    reader = instance_double(PDF::Reader)
+    pages = [instance_double(PDF::Reader::Page, text: text)]
     allow(extractor).to receive_messages(reader: reader, extract_metadata: metadata)
     allow(reader).to receive(:pages).and_return(pages)
     allow(metadata).to receive(:uuid).and_return("uuid")
@@ -29,7 +29,7 @@ RSpec.describe Rokujo::Extractor::Parsers::PDF do
   end
 
   it "raises an error with file path in the message" do
-    extractor = described_class.new("/foo.pdf")
+    extractor = described_class.new("/foo.pdf", model: model)
     allow(extractor).to receive(:`).and_raise StandardError
 
     expect { extractor.extract_sentences }.to raise_error StandardError, /foo\.pdf/
