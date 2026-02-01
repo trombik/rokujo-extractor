@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+require_relative "items/article_item"
+require_relative "items/file_item"
+require_relative "items/pdf_item"
+
 module Rokujo
   module Extractor
     module Items
