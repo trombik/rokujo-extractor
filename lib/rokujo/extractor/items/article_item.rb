@@ -38,7 +38,7 @@ module Rokujo
         def character_count
           return @character_count if @character_count
 
-          @character_count ||= body.map { |element| element[:text] }.join.size
+          @character_count ||= body.map { |element| element[:text] }.join.gsub(/\p{Space}/, "").size
         end
 
         # @return [String] Two-letter language code og the body
