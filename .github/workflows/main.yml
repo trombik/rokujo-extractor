@@ -34,6 +34,10 @@ jobs:
         runs_on:
           - ubuntu-latest
           - windows-latest
+        exclude:
+          # cld3 does not build with these ruby versions
+          - ruby: "head"
+          - ruby: "4.0"
 
     steps:
       - uses: actions/checkout@v4
