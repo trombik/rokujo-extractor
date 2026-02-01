@@ -6,8 +6,8 @@ RSpec.describe Rokujo::Extractor::Items::PdfItem do
     {
       AcquiredTime: now,
       Author: "Me",
-      ModDate: now,
-      CreationDate: now,
+      ModDate: "D:20240806181506+09'00",
+      CreationDate: "D:20240802115228+09'00",
       Title: "title",
       FileURL: "http://example.org/foo.pdf",
       OriginalFilename: "original.pdf",
@@ -27,7 +27,7 @@ RSpec.describe Rokujo::Extractor::Items::PdfItem do
     allow(path).to receive_messages(realpath: "/foo-hash.pdf", basename: "foo-hash.pdf")
     item = described_class.new("/foo-hash.pdf")
     item.location = path
-    item.body = "こんにちは"
+    item.body = [ { text: "こんにちは" } ]
     item.instance_variable_set(:@doc, doc)
     item
   end
@@ -58,13 +58,13 @@ RSpec.describe Rokujo::Extractor::Items::PdfItem do
 
   describe "#modified_time" do
     it "returns ModDate" do
-      expect(item.modified_time).to eq now
+      expect(item.modified_time).to eq "2024-08-06T18:15:06+07:00"
     end
   end
 
   describe "#published_time" do
     it "returns CreationDate" do
-      expect(item.published_time).to eq now
+      expect(item.published_time).to eq "2024-08-02T11:52:28+07:00"
     end
   end
 

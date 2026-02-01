@@ -28,11 +28,13 @@ module Rokujo
         end
 
         def modified_time
-          info[:ModDate]
+          time_string = asn1_time_to_time_string(info[:ModDate])
+          Time.parse(time_string).iso8601
         end
 
         def published_time
-          info[:CreationDate]
+          time_string = asn1_time_to_time_string(info[:CreationDate])
+          Time.parse(time_string).iso8601
         end
 
         def site_name
@@ -63,6 +65,12 @@ module Rokujo
         end
 
         private
+
+        def asn1_time_to_time_string(str)
+          str.sub(/^D:/, "")
+             .sub(/'(\d{2})$/, ':\1')
+             .sub("'", ":")
+        end
 
         def info
           @info ||= doc.info
