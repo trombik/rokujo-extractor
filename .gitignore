@@ -9,3 +9,6 @@
 
 # rspec failure tracking
 .rspec_status
+
+# ignore copyright-ed texts for benchmark
+/spec/fixture/1000.txt
