@@ -58,13 +58,13 @@ RSpec.describe Rokujo::Extractor::Items::PdfItem do
 
   describe "#modified_time" do
     it "returns ModDate" do
-      expect(item.modified_time).to eq "2024-08-06T11:15:06Z"
+      expect(item.modified_time).to eq "2024-08-06T09:15:06Z"
     end
   end
 
   describe "#published_time" do
     it "returns CreationDate" do
-      expect(item.published_time).to eq "2024-08-02T04:52:28Z"
+      expect(item.published_time).to eq "2024-08-02T02:52:28Z"
     end
   end
 
