@@ -5,6 +5,8 @@ PATH
       csv
       docx
       fiddle
+      iso-639
+      lingua_rb
       marcel
       parallel
       pastel
@@ -48,8 +50,11 @@ GEM
       pp (>= 0.6.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
+    iso-639 (0.3.8)
+      csv
     json (2.18.0)
     language_server-protocol (3.17.0.5)
+    lingua_rb (0.3.0)
     lint_roller (1.1.0)
     logger (1.7.0)
     marcel (1.1.0)
