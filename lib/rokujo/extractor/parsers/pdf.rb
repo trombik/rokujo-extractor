@@ -4,6 +4,7 @@ require "shellwords"
 require "pdf-reader"
 require_relative "base"
 require_relative "../metadata"
+require_relative "../items/pdf_item"
 
 module Rokujo
   module Extractor
@@ -14,10 +15,18 @@ module Rokujo
           super
         end
 
+        def item
+          return @item if @item
+
+          @item = Rokujo::Extractor::Items::PdfItem.new(location)
+          @item.body = extract_sentences
+          @item
+        end
+
         protected
 
         def reader
-          @reader ||= ::PDF::Reader.new(@location)
+          @reader ||= ::PDF::Reader.new(location.to_s)
         rescue StandardError => e
           raise e, "failed to read #{@location}: #{e.message}"
         end

@@ -54,6 +54,10 @@ module Rokujo
           @metadata ||= extract_metadata
         end
 
+        def item
+          raise NotImplementedError
+        end
+
         protected
 
         def raw_text
