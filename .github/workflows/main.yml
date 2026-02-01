@@ -51,11 +51,12 @@ jobs:
       - name: Install ja_core_news_sm
         run: python -m spacy download ja_core_news_sm
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      - name: Set up Ruby and Rust
+        uses: oxidize-rb/actions/setup-ruby-and-rust@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
+          cargo-cache: true
           bundler: latest
 
       - name: Run the default task
