@@ -20,6 +20,7 @@ module Rokujo
 
           @item = Rokujo::Extractor::Items::PdfItem.new(location)
           @item.body = extract_sentences
+          @item.uuid = uuid
           @item
         end
 

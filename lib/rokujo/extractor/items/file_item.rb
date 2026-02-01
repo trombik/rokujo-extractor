@@ -25,6 +25,7 @@ module Rokujo
           hash = super
           hash[:filename] = filename
           hash[:source] = source
+          hash[:uuid] = uuid
           hash
         end
       end

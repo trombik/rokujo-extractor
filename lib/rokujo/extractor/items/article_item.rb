@@ -22,7 +22,8 @@ module Rokujo
                       :site_name,
                       :sources,
                       :title,
-                      :url
+                      :url,
+                      :uuid
 
         def initialize(location, opts = {})
           @location = Pathname.new(location)
@@ -35,7 +36,9 @@ module Rokujo
 
         # @return [Integer] Character length without space
         def character_count
-          @character_count ||= body.gsub(/\p{Space}/, "").size
+          return @character_count if @character_count
+
+          @character_count ||= body.map { |element| element[:text] }.join.size
         end
 
         # @return [String] Two-letter language code og the body
@@ -43,7 +46,8 @@ module Rokujo
           return @lang if @lang
 
           @cld3 ||= CLD3::NNetLanguageIdentifier.new(0, 1000)
-          @lang = @cld3.find_language(body[0, 20]).language.to_s
+          text = body[0..10].map { |element| element[:text] }.join
+          @lang = @cld3.find_language(text).language.to_s
         end
 
         def to_h
@@ -63,7 +67,8 @@ module Rokujo
             site_name: site_name,
             sources: [],
             title: title,
-            url: url
+            url: url,
+            uuid: uuid
           }
         end
       end

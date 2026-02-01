@@ -43,6 +43,10 @@ module Rokujo
           end
         end
 
+        def uuid
+          metadata.uuid
+        end
+
         # Extracts metadata from a resource.
         #
         # @return [Object] Metadata object.
