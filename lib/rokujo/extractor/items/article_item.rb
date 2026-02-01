@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-require "iso-639"
-require "lingua"
+require "cld"
 require "pathname"
 require "time"
 require "uri"
@@ -41,7 +40,7 @@ module Rokujo
 
         # @return [String] Two-letter language code og the body
         def lang
-          ISO_639.find_by_english_name(Lingua.detect(body[0, 200])).alpha2
+          CLD.detect_language(body[0, 200])[:code]
         end
 
         def to_h
