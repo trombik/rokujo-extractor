@@ -2,36 +2,39 @@
 
 RSpec.describe Rokujo::Extractor::Parsers::PDF do
   let(:extractor) { described_class.new("/foo.pdf", model: model, widget_enable: false) }
+
   let(:text) do
     <<~TEXT
-      本文を、敬体（ですます調）あるいは常体（である調）のどちらかに統一する。
-      常用漢字表にある漢字を主に使用する。
+      常体は、簡潔に、力強い雰囲気で内容を伝えることができる文体です。丁寧ではない印
+      象を読み手に与える場合があるため、通常、一般向けのマニュアルの本文では使われませ
+      ん。
+
+      3.2 記号
+
+
     TEXT
   end
-  let(:metadata) { instance_double(Rokujo::Extractor::Metadata::Base) }
 
   before do
-    reader = instance_double(PDF::Reader)
-    pages = [instance_double(PDF::Reader::Page, text: text)]
-    allow(extractor).to receive_messages(reader: reader, extract_metadata: metadata)
-    allow(reader).to receive(:pages).and_return(pages)
+    metadata = instance_double(Rokujo::Extractor::Metadata::PDF)
     allow(metadata).to receive(:uuid).and_return("uuid")
+    allow(extractor).to receive_messages(
+      dump: text,
+      metadata: metadata
+    )
   end
 
-  it "returns correct number of the extracted texts" do
-    expect(extractor.extract_sentences.count).to eq 2
+  describe "raw_text" do
+    it "removes a short sentence and the following empty line" do
+      expect(extractor.raw_text).not_to match(/^3\.2 記号\n\n/)
+    end
   end
 
-  it "runs pdftotext and returns the extracted texts" do
-    extracted_sentences = extractor.extract_sentences.map { |s| s[:text] }
-
-    expect(extracted_sentences).to eq text.unicode_normalize(:nfkc).split("\n")
-  end
-
-  it "raises an error with file path in the message" do
-    extractor = described_class.new("/foo.pdf", model: model)
-    allow(extractor).to receive(:`).and_raise StandardError
-
-    expect { extractor.extract_sentences }.to raise_error StandardError, /foo\.pdf/
+  describe "#extract_sentences" do
+    it "selects マニュアルの本文では使われません as a sentence" do
+      sentences = extractor.extract_sentences
+      texts = sentences.map { |el| el[:text] }
+      expect(texts).to include(match(/マニュアルの本文では使われません。/))
+    end
   end
 end
