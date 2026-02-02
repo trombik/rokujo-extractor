@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "file_item"
+require "pdf-reader"
 
 module Rokujo
   module Extractor

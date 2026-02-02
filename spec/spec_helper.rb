@@ -18,6 +18,7 @@ RSpec.configure do |config|
 
   # include spec/support/spacy_helper.rb to cache the model
   config.include SpacyHelper
+  config.include FixtureHelpers
 
   # disable spinner and progress bar
   ENV["CI"] = "y"

@@ -56,6 +56,16 @@ jobs:
       - name: Install ja_core_news_sm
         run: python -m spacy download ja_core_news_sm
 
+      - name: Install poppler on Windows
+        if: runner.os == 'Windows'
+        run: |
+          choco install poppler
+
+      - name: Install poppler on Ubuntu
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install -y poppler-utils
+
       - name: Set up Ruby and Rust
         uses: ruby/setup-ruby@v1
         with:

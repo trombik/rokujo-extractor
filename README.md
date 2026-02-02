@@ -7,6 +7,7 @@ hard line breaks.
 
 <!-- vim-markdown-toc GFM -->
 
+* [Requirements](#requirements)
 * [Installation](#installation)
 * [Usage](#usage)
 * [Known issues](#known-issues)
@@ -16,6 +17,10 @@ hard line breaks.
 * [License](#license)
 
 <!-- vim-markdown-toc -->
+
+## Requirements
+
+* `pdftotext`
 
 ## Installation
 
