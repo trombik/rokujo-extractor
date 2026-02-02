@@ -6,7 +6,6 @@ require_relative "extractor/version"
 require_relative "extractor/errors"
 require_relative "extractor/filters"
 require_relative "extractor/pipeline"
-require_relative "extractor/metadata"
 require_relative "extractor/parsers"
 require_relative "extractor/items"
 
@@ -36,8 +35,6 @@ module Rokujo
         Parsers::Docx.new(file_path, **opts)
       when ".txt"
         Parsers::Text.new(file_path, **opts)
-      when ".jsonl"
-        Parsers::JSONL.new(file_path, **opts)
       end
     end
 

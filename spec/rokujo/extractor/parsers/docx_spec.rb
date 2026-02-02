@@ -11,10 +11,8 @@ RSpec.describe Rokujo::Extractor::Parsers::Docx do
     paragraph = instance_double(Docx::Elements::Containers::Paragraph, text: text)
     [paragraph, paragraph]
   end
-  let(:metadata) { instance_double(Rokujo::Extractor::Metadata::Base) }
 
   before do
-    allow(metadata).to receive(:uuid).and_return("uuid")
     allow(Docx::Document).to receive(:open).and_return doc
   end
 

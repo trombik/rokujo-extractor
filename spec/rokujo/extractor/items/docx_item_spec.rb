@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "nokogiri"
+
 RSpec.describe Rokujo::Extractor::Items::DocxItem do
   let(:now) { Time.now.utc.iso8601 }
   let(:core_xml_string) do
