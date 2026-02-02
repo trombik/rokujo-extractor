@@ -27,24 +27,30 @@ module Rokujo
           self.widget_enable = @opts.fetch(:widget_enable, true)
         end
 
+        def item
+          @item ||= Rokujo::Extractor::Items::FileItem.new(location)
+        end
+
+        def uuid
+          @uuid ||= item.uuid
+        end
+
         def extract_sentences
           content = raw_text
           return [] if content.nil? || content.empty?
 
           pipeline = Pipeline.new(*pipeline_filters, widget_enable: @widget_enable)
-          pipeline.run(content).map.with_index do |s, i|
+          result = pipeline.run(content).map.with_index do |s, i|
             {
               text: s.strip,
               meta: {
                 line_number: i + 1,
-                uuid: metadata.uuid
+                uuid: uuid
               }
             }
           end
-        end
-
-        def uuid
-          metadata.uuid
+          item.body = result
+          result
         end
 
         # Extracts metadata from a resource.
@@ -52,14 +58,6 @@ module Rokujo
         # @return [Object] Metadata object.
         def extract_metadata
           raise Rokujo::Extractor::Errors::NotImplementedError, "#{self.class} must implement #{__method__}"
-        end
-
-        def metadata
-          @metadata ||= extract_metadata
-        end
-
-        def item
-          raise NotImplementedError
         end
 
         protected

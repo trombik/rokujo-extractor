@@ -8,12 +8,6 @@ RSpec.describe Rokujo::Extractor::Parsers::Base do
       常用漢字表にある漢字を主に使用する。
     TEXT
   end
-  let(:metadata) { instance_double(Rokujo::Extractor::Metadata::Base) }
-
-  before do
-    allow(metadata).to receive(:uuid).and_return("uuid")
-    allow(extractor).to receive(:metadata).and_return(metadata)
-  end
 
   describe "#new" do
     it "does not raise" do

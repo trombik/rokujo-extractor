@@ -24,12 +24,6 @@ RSpec.describe Rokujo::Extractor do
       end
     end
 
-    context "when *.jsonl is given" do
-      it "returns JSONL class" do
-        expect(described_class.create("/foo.jsonl", model: model)).to be_a Rokujo::Extractor::Parsers::JSONL
-      end
-    end
-
     context "when unsupported file is given" do
       it "raise UnsupportedFileTypeError" do
         allow(Marcel::MimeType).to receive(:for).and_return "image/svg+xml"

@@ -24,8 +24,8 @@ RSpec.describe Rokujo::Extractor::Items::FileItem do
   end
 
   describe "#to_h" do
-    specify "the hash has filename and source" do
-      expect(item.to_h.keys).to include(:filename, :source)
+    specify "the hash has filename, uuid and source" do
+      expect(item.to_h.keys).to include(:filename, :source, :uuid)
     end
   end
 end

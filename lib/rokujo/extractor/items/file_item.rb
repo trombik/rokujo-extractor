@@ -9,6 +9,8 @@ module Rokujo
       class FileItem < ArticleItem
         attr_accessor :source
 
+        include Rokujo::Extractor::Concerns::Identifiable
+
         def initialize(location, opts = {})
           super
         end
@@ -19,6 +21,10 @@ module Rokujo
 
         def url
           URI::File.build([nil, location.realpath.to_s])
+        end
+
+        def uuid
+          @uuid ||= uuid_v7
         end
 
         def to_h

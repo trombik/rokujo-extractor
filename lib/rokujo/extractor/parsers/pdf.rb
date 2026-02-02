@@ -3,7 +3,6 @@
 require "shellwords"
 require "open3"
 require_relative "base"
-require_relative "../metadata"
 require_relative "../items/pdf_item"
 
 module Rokujo
@@ -16,12 +15,7 @@ module Rokujo
         end
 
         def item
-          return @item if @item
-
-          @item = Rokujo::Extractor::Items::PdfItem.new(location)
-          @item.body = extract_sentences
-          @item.uuid = uuid
-          @item
+          @item ||= Rokujo::Extractor::Items::PdfItem.new(location)
         end
 
         def dump
@@ -76,10 +70,6 @@ module Rokujo
           size = array.size
           center = size / 2
           size.even? ? (sorted[center] + sorted[center - 1]) / 2.0 : sorted[center]
-        end
-
-        def extract_metadata
-          Rokujo::Extractor::Metadata::PDF.new(@location)
         end
       end
     end
