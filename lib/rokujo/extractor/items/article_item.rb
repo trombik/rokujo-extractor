@@ -19,6 +19,7 @@ module Rokujo
                       :location,
                       :modified_time,
                       :published_time,
+                      :sentences,
                       :site_name,
                       :sources,
                       :title,
@@ -37,9 +38,9 @@ module Rokujo
 
         # @return [Integer] Character length without space
         def character_count
-          return @character_count if @character_count
+          return 0 if sentences.nil? || sentences.empty?
 
-          @character_count ||= body.map { |element| element[:text] }.join.gsub(/\p{Space}/, "").size
+          sentences.map { |element| element[:text] }.join.gsub(/\p{Space}/, "").size
         end
 
         # @return [String] Two-letter language code og the body
@@ -47,7 +48,7 @@ module Rokujo
           return @lang if @lang
 
           @cld3 ||= CLD3::NNetLanguageIdentifier.new(0, 1000)
-          text = body[0..10].map { |element| element[:text] }.join
+          text = sentences[0..10].map { |element| element[:text] }.join
           @lang = @cld3.find_language(text).language.to_s
         end
 
@@ -65,6 +66,7 @@ module Rokujo
             lang: lang,
             modified_time: modified_time,
             published_time: published_time,
+            sentences: sentences,
             site_name: site_name,
             sources: [],
             title: title,
