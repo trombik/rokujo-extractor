@@ -12,7 +12,8 @@ module Rokujo
         include Rokujo::Extractor::Concerns::Identifiable
 
         def initialize(location, opts = {})
-          super
+          @location = Pathname.new(location)
+          super(opts)
         end
 
         def filename

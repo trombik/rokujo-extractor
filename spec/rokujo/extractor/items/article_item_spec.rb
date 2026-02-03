@@ -1,29 +1,43 @@
 # frozen_string_literal: true
 
 RSpec.describe Rokujo::Extractor::Items::ArticleItem do
+  let(:body) do
+    [
+      { text: "ヘディングには句読点がないことが多い。",
+        meta: { line_number: 1, uuid: "019c20af-c05e-7c4a-aaff-f9d5eccfce83" } },
+      { text: "この文は本文の最初の文である。", meta: { line_number: 2, uuid: "019c20af-c05e-7c4a-aaff-f9d5eccfce83" } },
+      { text: "この文は本文の二番目の文である。", meta: { line_number: 3, uuid: "019c20af-c05e-7c4a-aaff-f9d5eccfce83" } },
+      { text: "複数の文章が含まれる。", meta: { line_number: 4, uuid: "019c20af-c05e-7c4a-aaff-f9d5eccfce83" } },
+      { text: "この文は本文の最後のの文である。", meta: { line_number: 5, uuid: "019c20af-c05e-7c4a-aaff-f9d5eccfce83" } }
+    ].to_json
+  end
+  let(:article_string) do
+    <<~JSON
+      {
+        "acquired_time": "2026-02-01T16:14:29.279987+00:00",
+        "body": #{body},
+        "url": "https://news.example.org/articles/eecbc2dc77b9a42c4fa236e424eb96d0c1fcd7e1",
+        "lang": "ja",
+        "author": "なんとかスポーツ",
+        "description": "記事の説明",
+        "kind": "article",
+        "modified_time": "2026-02-02T00:06:00+09:00",
+        "published_time": "2026-02-02T00:06:00+09:00",
+        "site_name": "なんとかニュース",
+        "title": "記事のタイトル",
+        "item_type": "ArticleItem",
+        "character_count": 42,
+        "sources": []
+      }
+    JSON
+  end
   let(:item) do
-    item = described_class.new("/foo.txt")
-    item.acquired_time = Time.now.iso8601
-    item.author = "Me"
-    item.body = [{ text: "foo" }]
-    item.description = "desc"
-    item.kind = "article"
-    item.modified_time = Time.now.iso8601
-    item.published_time = Time.now.iso8601
-    item.site_name = "Example site"
-    item.sources = []
-    item.title = "title"
-    item.url = "http://example.org/"
-    item
+    described_class.from_string(article_string)
   end
 
   describe "#location" do
     it "returns Pathname instance" do
-      expect(item.location.class).to be Pathname
-    end
-
-    it "returns path" do
-      expect(item.location.to_s).to eq "/foo.txt"
+      expect(item.location).to eq "https://news.example.org/articles/eecbc2dc77b9a42c4fa236e424eb96d0c1fcd7e1"
     end
   end
 
@@ -34,8 +48,8 @@ RSpec.describe Rokujo::Extractor::Items::ArticleItem do
   end
 
   describe "#body" do
-    it "is a reader accessor" do
-      expect(item.body.first[:text]).to eq "foo"
+    it "is an Array" do
+      expect(item.body).to be_an Array
     end
 
     it "is a writer accessor" do
@@ -47,6 +61,7 @@ RSpec.describe Rokujo::Extractor::Items::ArticleItem do
   describe "#character_count" do
     it "returns character length without space" do
       item.body = [{ text: "foo\u3000" }, { text: "bar\n" }]
+      item.instance_variable_set("@character_count", nil)
       expect(item.character_count).to eq 6
     end
   end
@@ -54,6 +69,7 @@ RSpec.describe Rokujo::Extractor::Items::ArticleItem do
   describe "#lang" do
     it "auto-detects the language in the body" do
       item.body = [{ text: "こんにちは" }]
+      item.instance_variable_set("@lang", nil)
       expect(item.lang).to eq "ja"
     end
   end
