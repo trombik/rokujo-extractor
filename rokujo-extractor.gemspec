@@ -47,6 +47,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "csv"
   spec.add_dependency "fiddle"
   spec.add_dependency "marcel"
+  spec.add_dependency "nokogiri"
   spec.add_dependency "parallel"
   spec.add_dependency "pastel"
   spec.add_dependency "pdf-reader"
