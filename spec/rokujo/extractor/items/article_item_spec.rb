@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Rokujo::Extractor::Items::ArticleItem do
-  let(:body) do
+  let(:sentences) do
     [
       { text: "ヘディングには句読点がないことが多い。",
         meta: { line_number: 1, uuid: "019c20af-c05e-7c4a-aaff-f9d5eccfce83" } },
@@ -9,13 +9,14 @@ RSpec.describe Rokujo::Extractor::Items::ArticleItem do
       { text: "この文は本文の二番目の文である。", meta: { line_number: 3, uuid: "019c20af-c05e-7c4a-aaff-f9d5eccfce83" } },
       { text: "複数の文章が含まれる。", meta: { line_number: 4, uuid: "019c20af-c05e-7c4a-aaff-f9d5eccfce83" } },
       { text: "この文は本文の最後のの文である。", meta: { line_number: 5, uuid: "019c20af-c05e-7c4a-aaff-f9d5eccfce83" } }
-    ].to_json
+    ]
   end
   let(:article_string) do
     <<~JSON
       {
         "acquired_time": "2026-02-01T16:14:29.279987+00:00",
-        "body": #{body},
+        "body": #{sentences.map { |el| el[:text] }.join("\n").to_json},
+        "sentences": #{sentences.to_json},
         "url": "https://news.example.org/articles/eecbc2dc77b9a42c4fa236e424eb96d0c1fcd7e1",
         "lang": "ja",
         "author": "なんとかスポーツ",
@@ -48,27 +49,27 @@ RSpec.describe Rokujo::Extractor::Items::ArticleItem do
   end
 
   describe "#body" do
-    it "is an Array" do
-      expect(item.body).to be_an Array
+    it "is an String" do
+      expect(item.body).to be_a String
     end
 
     it "is a writer accessor" do
-      item.body = [{ text: "bar" }]
-      expect(item.body.first[:text]).to eq "bar"
+      item.sentences = [{ text: "bar" }]
+      expect(item.sentences.first[:text]).to eq "bar"
     end
   end
 
   describe "#character_count" do
     it "returns character length without space" do
-      item.body = [{ text: "foo\u3000" }, { text: "bar\n" }]
+      item.sentences = [{ text: "foo\u3000" }, { text: "bar\n" }]
       item.instance_variable_set("@character_count", nil)
       expect(item.character_count).to eq 6
     end
   end
 
   describe "#lang" do
-    it "auto-detects the language in the body" do
-      item.body = [{ text: "こんにちは" }]
+    it "auto-detects the language in the sentences" do
+      item.sentences = [{ text: "こんにちは" }]
       item.instance_variable_set("@lang", nil)
       expect(item.lang).to eq "ja"
     end

@@ -49,8 +49,7 @@ module Rokujo
               }
             }
           end
-          item.body = result
-          result
+          item.sentences = result
         end
 
         # Extracts metadata from a resource.

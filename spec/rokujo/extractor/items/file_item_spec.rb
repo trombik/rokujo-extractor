@@ -7,7 +7,7 @@ RSpec.describe Rokujo::Extractor::Items::FileItem do
     item = described_class.new("/foo.txt")
     item.location = path
     item.source = {}
-    item.body = [{ text: "こんにちは" }]
+    item.sentences = [{ text: "こんにちは" }]
     item
   end
 
