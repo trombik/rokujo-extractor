@@ -10,7 +10,7 @@ module Rokujo
     module Items
       # ArticleItem
       class ArticleItem
-        attr_reader :opts
+        attr_reader :opts, :json
         attr_accessor :acquired_time,
                       :author,
                       :body,
@@ -22,11 +22,12 @@ module Rokujo
                       :site_name,
                       :sources,
                       :title,
-                      :url,
-                      :uuid
+                      :url
+        attr_writer :lang, :item_type, :character_count
 
-        def initialize(location, opts = {})
-          @location = Pathname.new(location)
+        include Rokujo::Extractor::Concerns::Identifiable
+
+        def initialize(opts = {})
           @opts = opts
         end
 
@@ -70,6 +71,20 @@ module Rokujo
             url: url,
             uuid: uuid
           }
+        end
+
+        def uuid
+          @uuid ||= uuid_v7
+        end
+
+        def self.from_string(string)
+          article = new
+          hash = JSON.parse(string, allow_control_characters: true)
+          hash.each do |k, v|
+            article.send("#{k}=", v)
+          end
+          article.location = hash["url"]
+          article
         end
       end
     end
