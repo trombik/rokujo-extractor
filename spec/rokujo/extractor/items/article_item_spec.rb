@@ -86,4 +86,22 @@ RSpec.describe Rokujo::Extractor::Items::ArticleItem do
       expect(item.to_h).to be_a Hash
     end
   end
+
+  context "when the item is nested" do
+    specify "soueces attribute has ArticleItem" do
+      item.sources = [
+        { title: "foo" }
+      ]
+
+      expect(item.sources.first).to be_a described_class
+    end
+
+    specify "to_h correctly expand sources" do
+      item.sources = [
+        { title: "foo" }
+      ]
+
+      expect(item.to_h[:sources].first).to be_a Hash
+    end
+  end
 end

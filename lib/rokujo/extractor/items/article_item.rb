@@ -10,7 +10,7 @@ module Rokujo
     module Items
       # ArticleItem
       class ArticleItem
-        attr_reader :opts, :json
+        attr_reader :opts, :json, :sources
         attr_accessor :acquired_time,
                       :author,
                       :body,
@@ -21,7 +21,6 @@ module Rokujo
                       :published_time,
                       :sentences,
                       :site_name,
-                      :sources,
                       :title,
                       :url
         attr_writer :lang, :item_type, :character_count
@@ -30,6 +29,11 @@ module Rokujo
 
         def initialize(opts = {})
           @opts = opts
+          @sources = []
+        end
+
+        def sources=(sources)
+          @sources = sources.map { |s| s.instance_of?(self.class) ? s : self.class.from_hash(s) }
         end
 
         def item_type
@@ -45,17 +49,16 @@ module Rokujo
 
         # @return [String] Two-letter language code og the body
         def lang
-          return @lang if @lang
+          return nil if sentences.nil? || sentences.empty?
 
           @cld3 ||= CLD3::NNetLanguageIdentifier.new(0, 1000)
           text = sentences[0..10].map { |element| element[:text] }.join
           @lang = @cld3.find_language(text).language.to_s
         end
 
+        # rubocop:disable Metrics/AbcSize
         def to_h
-          return @hash if @hash
-
-          @to_h ||= {
+          {
             acquired_time: acquired_time,
             author: author,
             body: body,
@@ -68,25 +71,30 @@ module Rokujo
             published_time: published_time,
             sentences: sentences,
             site_name: site_name,
-            sources: [],
+            sources: sources.map(&:to_h),
             title: title,
             url: url,
             uuid: uuid
           }
         end
+        # rubocop:enable Metrics/AbcSize
 
         def uuid
           @uuid ||= uuid_v7
         end
 
-        def self.from_string(string)
+        def self.from_hash(hash)
           article = new
-          hash = JSON.parse(string, allow_control_characters: true)
           hash.each do |k, v|
             article.send("#{k}=", v)
           end
           article.location = hash["url"]
           article
+        end
+
+        def self.from_string(string)
+          hash = JSON.parse(string, allow_control_characters: true)
+          from_hash(hash)
         end
       end
     end
