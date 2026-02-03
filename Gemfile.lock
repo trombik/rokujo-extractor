@@ -7,6 +7,7 @@ PATH
       docx
       fiddle
       marcel
+      nokogiri
       parallel
       pastel
       pdf-reader
