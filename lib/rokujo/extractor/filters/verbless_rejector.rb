@@ -1,5 +1,47 @@
 # frozen_string_literal: true
 
+require "net/http"
+
+# A service to fetch tokens analysis from remote spacy API
+class TextAnalysisService
+  attr_reader :text
+
+  API_URL = "http://localhost:8000/analyze_tokens"
+
+  def initialize(text)
+    @text = text
+    super()
+  end
+
+  def call
+    fetch(text)
+  end
+
+  private
+
+  def uri
+    @uri ||= URI(API_URL)
+  end
+
+  def request(text)
+    request = Net::HTTP::Post.new(uri, { "Content-Type" => "application/json" })
+    request.body = { text: text }.to_json
+    request
+  end
+
+  def fetch(text)
+    res = Net::HTTP.start(uri.hostname, uri.port, read_timeout: 60) do |http|
+      http.request(request(text))
+    end
+    case res
+    when Net::HTTPSuccess
+      JSON.parse(res.body)["tokens"]
+    else
+      raise "Analysis API HTTP Error: #{res.code} #{res.message}"
+    end
+  end
+end
+
 require "ruby-spacy"
 require "parallel"
 require "etc"
@@ -18,10 +60,7 @@ module Rokujo
         # @param model [Object] A language model created with Spacy::Language.new.
         #                       The default model is DEFAULT_SPACY_MODEL_NAME
         def initialize(model: nil)
-          # request the GC to start before creating a new instance of Spacy
-          # model. this resovles a possible deadlock.
-          GC.start
-          @nlp = model || Spacy::Language.new(DEFAULT_SPACY_MODEL_NAME)
+          model = nil
           super()
         end
 
@@ -63,8 +102,8 @@ module Rokujo
         end
 
         def sentence_include_predicate?(sentence)
-          doc = @nlp.read(sentence)
-          tokens_include_predicate?(doc.tokens)
+          tokens = TextAnalysisService.new(sentence).call
+          tokens_include_predicate?(tokens)
         end
 
         # Returns true or false if the given tokens has a predicate.
@@ -74,16 +113,16 @@ module Rokujo
         # even if the logic is refactored into multiple methods.
         def tokens_include_predicate?(tokens)
           # if nsubj is found, there should be 述語
-          return true if tokens.any? { |t| t.dep_ == "nsubj" }
+          return true if tokens.any? { |t| t["dep"] == "nsubj" }
 
           # find the ROOT token and, if found, see if Part-of-Speech (pos) either:
           # * indicates an action or process (VERB)
           # * indicates a state or quality (ADJ)
           # * indicates a copula or auxiliary state (AUX, e.g., "だ" or "です")
-          root_token = tokens.find { |t| t.dep_ == "ROOT" }
-          return true if root_token && %w[VERB ADJ AUX].include?(root_token.pos)
+          root_token = tokens.find { |t| t["dep"] == "ROOT" }
+          return true if root_token && %w[VERB ADJ AUX].include?(root_token["pos"])
 
-          return true if tokens.any? { |t| t.tag_.start_with?("動詞", "形容詞") }
+          return true if tokens.any? { |t| t["tag"].start_with?("動詞", "形容詞") }
 
           false
         end
