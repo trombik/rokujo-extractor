@@ -3,7 +3,7 @@
 require "net/http"
 
 # A service to fetch tokens analysis from remote spacy API
-class TextAnalysisService
+class AnalysisService
   attr_reader :text
 
   API_URL = "http://localhost:8000/analyze_tokens"
@@ -92,7 +92,7 @@ module Rokujo
         end
 
         def sentence_include_predicate?(sentence)
-          tokens = TextAnalysisService.new(sentence).call
+          tokens = AnalysisService.new(sentence).call
           tokens_include_predicate?(tokens)
         end
 
