@@ -52,7 +52,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "pastel"
   spec.add_dependency "pdf-reader"
   spec.add_dependency "pragmatic_segmenter"
-  spec.add_dependency "ruby-spacy"
   spec.add_dependency "thor"
   spec.add_dependency "tty-logger"
   spec.add_dependency "tty-progressbar"

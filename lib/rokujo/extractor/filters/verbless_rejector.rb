@@ -42,7 +42,6 @@ class TextAnalysisService
   end
 end
 
-require "ruby-spacy"
 require "parallel"
 require "etc"
 
@@ -51,18 +50,9 @@ module Rokujo
     module Filters
       # A filter that rejects sentences without verb.
       class VerblessRejector < Base
-        # The default model name
-        DEFAULT_SPACY_MODEL_NAME = "ja_ginza"
         DEFAULT_NCPU = Etc.nprocessors # number of physical processors exceluding HT
         DEFAULT_CHUNK_SIZE = 50
         PLATFORM_DOES_NOT_SUPPORTS_FORK = Etc.uname[:sysname] =~ /Windows|MSYS|MINGW/ ? true : false
-
-        # @param model [Object] A language model created with Spacy::Language.new.
-        #                       The default model is DEFAULT_SPACY_MODEL_NAME
-        def initialize(model: nil)
-          model = nil
-          super()
-        end
 
         # @param sentences [Array<String>]
         # @return [Array<String>] Array of filtered sentences.

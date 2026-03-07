@@ -7,7 +7,6 @@ require "rokujo/extractor/formatters"
 require "rokujo/extractor/concerns/renderable"
 require "thor"
 require "json"
-require "ruby-spacy"
 require "tty/logger"
 
 module Rokujo
@@ -46,9 +45,6 @@ module Rokujo
         show_help_and_exit if file_paths.empty?
 
         self.widget_enable = options[:progress] ? true : false
-        @model = with_spinner do
-          Spacy::Language.new(Rokujo::Extractor::Parsers::Base::DEFAULT_SPACY_MODEL_NAME)
-        end
 
         file_paths.each_with_index do |path, index|
           logger.info "Processing #{path} (#{index + 1}/#{file_paths.count}) ..."
@@ -67,7 +63,6 @@ module Rokujo
       no_commands do
         def extract_sentences(path)
           opts = {
-            model: @model,
             metadata: { source: File.basename(path) },
             uuid: options[:uuid],
             widget_enable: options[:progress]

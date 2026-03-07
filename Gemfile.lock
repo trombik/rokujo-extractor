@@ -12,7 +12,6 @@ PATH
       pastel
       pdf-reader
       pragmatic_segmenter
-      ruby-spacy
       thor
       tty-logger
       tty-progressbar
@@ -35,15 +34,6 @@ GEM
       nokogiri (~> 1.13, >= 1.13.0)
       rubyzip (>= 2.0, < 4)
     erb (6.0.0)
-    event_stream_parser (1.0.0)
-    faraday (2.14.0)
-      faraday-net_http (>= 2.0, < 3.5)
-      json
-      logger
-    faraday-multipart (1.2.0)
-      multipart-post (~> 2.0)
-    faraday-net_http (3.4.2)
-      net-http (~> 0.5)
     fiddle (1.1.8)
     hashery (2.1.2)
     io-console (0.8.1)
@@ -54,18 +44,12 @@ GEM
     json (2.18.0)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
-    logger (1.7.0)
     marcel (1.1.0)
     method_source (1.1.0)
     mini_portile2 (2.8.9)
-    multipart-post (2.4.1)
-    net-http (0.9.1)
-      uri (>= 0.11.1)
     nokogiri (1.18.10)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
-    numpy (0.4.0)
-      pycall (>= 1.2.0.beta1)
     parallel (1.27.0)
     parser (3.3.10.0)
       ast (~> 2.4.1)
@@ -90,7 +74,6 @@ GEM
     psych (5.3.0)
       date
       stringio
-    pycall (1.5.2)
     racc (1.8.1)
     rainbow (3.1.1)
     rake (13.3.1)
@@ -131,17 +114,8 @@ GEM
     rubocop-rspec (3.8.0)
       lint_roller (~> 1.1)
       rubocop (~> 1.81)
-    ruby-openai (8.3.0)
-      event_stream_parser (>= 0.3.0, < 2.0.0)
-      faraday (>= 1)
-      faraday-multipart (>= 1)
     ruby-progressbar (1.13.0)
     ruby-rc4 (0.1.5)
-    ruby-spacy (0.2.3)
-      numpy (~> 0.4.0)
-      pycall (~> 1.5.1)
-      ruby-openai
-      terminal-table (~> 3.0.1)
     rubyzip (3.2.2)
     stringio (3.1.9)
     strings-ansi (0.2.0)
@@ -164,7 +138,6 @@ GEM
     tty-spinner (0.9.3)
       tty-cursor (~> 0.7)
     unicode-display_width (2.6.0)
-    uri (1.1.1)
     uuid7 (0.2.0)
       zeitwerk (~> 2.4)
     zeitwerk (2.7.4)

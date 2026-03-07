@@ -20,10 +20,6 @@ module Rokujo
         def initialize(location, opts = {})
           @location = Pathname.new(location)
           @opts = opts
-          @nlp = @opts.fetch(:model) do |key|
-            warn "#{key} is not passed. Using #{DEFAULT_SPACY_MODEL_NAME}"
-            Spacy::Language.new(DEFAULT_SPACY_MODEL_NAME)
-          end
           self.widget_enable = @opts.fetch(:widget_enable, true)
         end
 
@@ -72,7 +68,7 @@ module Rokujo
             Filters::Normalizer.new,
             Filters::LineReconstructor.new,
             Filters::Segmenter.new,
-            Filters::VerblessRejector.new(model: @nlp),
+            Filters::VerblessRejector.new,
             Filters::BulletRemover.new,
             Filters::UrlRemover.new,
             Filters::KeywordRemover.new,
