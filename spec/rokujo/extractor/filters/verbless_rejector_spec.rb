@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Rokujo::Extractor::Filters::VerblessRejector do
-  let(:filter) { described_class.new(model: model) }
+  let(:filter) { described_class.new }
 
   describe "#call" do
     it "does not select sentences without verb" do

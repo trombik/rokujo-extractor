@@ -7,7 +7,7 @@ RSpec.describe Rokujo::Extractor::Parsers::Text do
       常用漢字表にある漢字を主に使用する。
     TEXT
   end
-  let(:obj) { described_class.new("/foo.txt", model: model, widget_enable: false) }
+  let(:obj) { described_class.new("/foo.txt", widget_enable: false) }
 
   before do
     allow(File).to receive(:read).and_return text

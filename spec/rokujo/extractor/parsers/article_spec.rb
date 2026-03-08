@@ -43,7 +43,7 @@ RSpec.describe Rokujo::Extractor::Parsers::Article do
     JSON
   end
   let(:parser) do
-    described_class.new(article_string, model: model, widget_enable: false)
+    described_class.new(article_string, widget_enable: false)
   end
 
   describe "#new" do

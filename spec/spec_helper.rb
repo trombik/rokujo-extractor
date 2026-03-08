@@ -16,8 +16,6 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
-  # include spec/support/spacy_helper.rb to cache the model
-  config.include SpacyHelper
   config.include FixtureHelpers
 
   # disable spinner and progress bar

@@ -2,7 +2,7 @@
 
 RSpec.describe Rokujo::Extractor::Parsers::PDF do
   let(:extractor) do
-    obj = described_class.new("/foo.pdf", model: model, widget_enable: false)
+    obj = described_class.new("/foo.pdf", widget_enable: false)
     obj
   end
 
