@@ -29,7 +29,9 @@ class AnalysisService
     request
   end
 
+  # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
   def fetch(text)
+    retries = 0
     res = Net::HTTP.start(uri.hostname, uri.port, read_timeout: 60) do |http|
       http.request(request(text))
     end
@@ -39,7 +41,16 @@ class AnalysisService
     else
       raise "Analysis API HTTP Error: #{res.code} #{res.message}"
     end
+  rescue StandardError => e
+    max_retries = 3
+    retries += 1
+    raise e if retries > max_retries
+
+    wait_time = 2**retries
+    sleep wait_time
+    retry
   end
+  # rubocop:enable Metrics/MethodLength,Metrics/AbcSize
 end
 
 require "parallel"
